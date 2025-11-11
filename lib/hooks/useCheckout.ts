@@ -7,7 +7,9 @@ interface CheckoutData {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  customerAddress: string;
+  streetAddress: string;
+  city: string;
+  postalCode?: string;
   paymentMethod: string;
 }
 
@@ -25,8 +27,10 @@ export const useCheckout = () => {
     const { data: result } = await createOrderMutation({
       variables: {
         input: {
-          ...data,
-          orderItems,
+          input: {
+            ...data,
+            orderItems,
+          },
         },
       },
     });

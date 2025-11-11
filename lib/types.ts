@@ -37,7 +37,9 @@ export interface Order {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  customerAddress: string;
+  streetAddress: string;
+  city: string;
+  postalCode?: string;
   status: string;
   totalAmount: number;
   createdAt: string;
@@ -51,6 +53,7 @@ export interface StoreSettings {
   logoUrl?: string;
   primaryColor?: string;
   secondaryColor?: string;
+  currencySymbol: string;
   bankAccountName?: string;
   bankAccountNumber?: string;
   bankName?: string;

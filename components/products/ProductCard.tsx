@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/lib/types';
+import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
+import { formatPrice } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -8,6 +10,8 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const imageUrl = product.images[0] || '/placeholder-product.png';
+  const { settings } = useStoreSettingsStore();
+  const currencySymbol = settings?.currencySymbol || '₨';
 
   return (
     <Link href={`/products/${product.id}`}>
@@ -38,7 +42,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
           <div className="flex justify-between items-center">
             <span className="text-2xl font-bold text-blue-600">
-              ${product.price.toFixed(2)}
+              {formatPrice(product.price, currencySymbol)}
             </span>
             {product.inStock && (
               <span className="text-sm text-gray-500">

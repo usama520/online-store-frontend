@@ -2,19 +2,23 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_PRODUCTS, GET_CATEGORIES } from '@/lib/graphql/queries';
+import { GET_PRODUCTS, GET_CATEGORIES, GET_STORE_SETTINGS } from '@/lib/graphql/queries';
 import { CREATE_PRODUCT, UPDATE_PRODUCT, DELETE_PRODUCT } from '@/lib/graphql/mutations';
-import { Product, Category } from '@/lib/types';
+import { formatPrice } from '@/lib/utils';
+import { Product, Category, StoreSettings } from '@/lib/types';
 
 export default function AdminProductsPage() {
   const { data, refetch } = useQuery(GET_PRODUCTS);
   const { data: categoriesData } = useQuery(GET_CATEGORIES);
+  const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
   
   const products = (data?.products || []) as Product[];
   const categories = (categoriesData?.categories || []) as Category[];
+  const storeSettings = settingsData?.storeSettings as StoreSettings | null;
+  const currencySymbol = storeSettings?.currencySymbol || '₨';
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -130,7 +134,7 @@ export default function AdminProductsPage() {
                     {product.sku && <div className="text-xs text-gray-500">SKU: {product.sku}</div>}
                   </div>
                 </td>
-                <td className="py-3 px-4 text-gray-800">${product.price.toFixed(2)}</td>
+                <td className="py-3 px-4 text-gray-800">{formatPrice(product.price, currencySymbol)}</td>
                 <td className="py-3 px-4">
                   <span className={`font-semibold ${product.stockQuantity < 10 ? 'text-red-600' : 'text-green-600'}`}>
                     {product.stockQuantity}

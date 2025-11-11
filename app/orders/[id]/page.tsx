@@ -2,9 +2,10 @@
 
 import { useParams } from 'next/navigation';
 import { useQuery } from '@apollo/client';
-import { GET_ORDER } from '@/lib/graphql/queries';
+import { GET_ORDER, GET_STORE_SETTINGS } from '@/lib/graphql/queries';
+import { formatPrice } from '@/lib/utils';
 import Navbar from '@/components/ui/Navbar';
-import { Order } from '@/lib/types';
+import { Order, StoreSettings } from '@/lib/types';
 import Link from 'next/link';
 
 export default function OrderSuccessPage() {
@@ -15,6 +16,10 @@ export default function OrderSuccessPage() {
     variables: { id },
     skip: !id,
   });
+  
+  const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
+  const storeSettings = settingsData?.storeSettings as StoreSettings | null;
+  const currencySymbol = storeSettings?.currencySymbol || '₨';
   
   const order = data?.order as Order | null;
 
@@ -90,7 +95,7 @@ export default function OrderSuccessPage() {
               <p><span className="font-medium">Name:</span> {order.customerName}</p>
               <p><span className="font-medium">Email:</span> {order.customerEmail}</p>
               <p><span className="font-medium">Phone:</span> {order.customerPhone}</p>
-              <p><span className="font-medium">Address:</span> {order.customerAddress}</p>
+              <p><span className="font-medium">Address:</span> {order.streetAddress}, {order.city}{order.postalCode ? `, ${order.postalCode}` : ''}</p>
             </div>
           </div>
         </div>
@@ -107,8 +112,8 @@ export default function OrderSuccessPage() {
                   <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-800">${item.subtotal.toFixed(2)}</p>
-                  <p className="text-sm text-gray-600">${item.price.toFixed(2)} each</p>
+                  <p className="font-semibold text-gray-800">{formatPrice(item.subtotal, currencySymbol)}</p>
+                  <p className="text-sm text-gray-600">{formatPrice(item.price, currencySymbol)} each</p>
                 </div>
               </div>
             ))}
@@ -116,7 +121,7 @@ export default function OrderSuccessPage() {
 
           <div className="border-t mt-6 pt-4 flex justify-between items-center">
             <span className="text-xl font-bold text-gray-800">Total</span>
-            <span className="text-2xl font-bold text-blue-600">${order.totalAmount.toFixed(2)}</span>
+            <span className="text-2xl font-bold text-blue-600">{formatPrice(order.totalAmount, currencySymbol)}</span>
           </div>
         </div>
 

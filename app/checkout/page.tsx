@@ -6,6 +6,7 @@ import { useCartStore } from '@/lib/zustand/cartStore';
 import { useCheckout } from '@/lib/hooks/useCheckout';
 import { useQuery } from '@apollo/client';
 import { GET_STORE_SETTINGS } from '@/lib/graphql/queries';
+import { formatPrice } from '@/lib/utils';
 import Navbar from '@/components/ui/Navbar';
 import { StoreSettings } from '@/lib/types';
 
@@ -15,12 +16,15 @@ export default function CheckoutPage() {
   const { checkout, loading } = useCheckout();
   const { data } = useQuery(GET_STORE_SETTINGS);
   const storeSettings = data?.storeSettings as StoreSettings | null;
+  const currencySymbol = storeSettings?.currencySymbol || '₨';
   
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
     customerPhone: '',
-    customerAddress: '',
+    streetAddress: '',
+    city: '',
+    postalCode: '',
     paymentMethod: 'cash_on_delivery',
   });
 
@@ -49,7 +53,9 @@ export default function CheckoutPage() {
       newErrors.customerEmail = 'Invalid email format';
     }
     if (!formData.customerPhone.trim()) newErrors.customerPhone = 'Phone is required';
-    if (!formData.customerAddress.trim()) newErrors.customerAddress = 'Address is required';
+    if (!formData.streetAddress.trim()) newErrors.streetAddress = 'Street address is required';
+    if (!formData.city.trim()) newErrors.city = 'City is required';
+    // Postal code is optional, no validation needed
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -92,7 +98,7 @@ export default function CheckoutPage() {
                       name="customerName"
                       value={formData.customerName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border ${errors.customerName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full px-4 py-2 border ${errors.customerName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
                     />
                     {errors.customerName && (
                       <p className="text-red-500 text-sm mt-1">{errors.customerName}</p>
@@ -108,7 +114,7 @@ export default function CheckoutPage() {
                       name="customerEmail"
                       value={formData.customerEmail}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border ${errors.customerEmail ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full px-4 py-2 border ${errors.customerEmail ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
                     />
                     {errors.customerEmail && (
                       <p className="text-red-500 text-sm mt-1">{errors.customerEmail}</p>
@@ -124,7 +130,7 @@ export default function CheckoutPage() {
                       name="customerPhone"
                       value={formData.customerPhone}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border ${errors.customerPhone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full px-4 py-2 border ${errors.customerPhone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
                     />
                     {errors.customerPhone && (
                       <p className="text-red-500 text-sm mt-1">{errors.customerPhone}</p>
@@ -133,18 +139,50 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Delivery Address *
+                      Street Address *
                     </label>
-                    <textarea
-                      name="customerAddress"
-                      value={formData.customerAddress}
+                    <input
+                      type="text"
+                      name="streetAddress"
+                      value={formData.streetAddress}
                       onChange={handleChange}
-                      rows={3}
-                      className={`w-full px-4 py-2 border ${errors.customerAddress ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      placeholder="House/Flat #, Street name"
+                      className={`w-full px-4 py-2 border ${errors.streetAddress ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
                     />
-                    {errors.customerAddress && (
-                      <p className="text-red-500 text-sm mt-1">{errors.customerAddress}</p>
+                    {errors.streetAddress && (
+                      <p className="text-red-500 text-sm mt-1">{errors.streetAddress}</p>
                     )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 border ${errors.city ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
+                      />
+                      {errors.city && (
+                        <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Postal Code (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        name="postalCode"
+                        value={formData.postalCode}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -219,7 +257,7 @@ export default function CheckoutPage() {
                         {item.name} x {item.quantity}
                       </span>
                       <span className="font-medium text-gray-800">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.price * item.quantity, currencySymbol)}
                       </span>
                     </div>
                   ))}
@@ -228,7 +266,7 @@ export default function CheckoutPage() {
                 <div className="border-t pt-4 space-y-2 mb-6">
                   <div className="flex justify-between text-xl font-bold text-gray-800">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{formatPrice(total, currencySymbol)}</span>
                   </div>
                 </div>
 

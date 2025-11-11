@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProduct } from '@/lib/hooks/useProducts';
 import { useCartStore } from '@/lib/zustand/cartStore';
+import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
+import { formatPrice } from '@/lib/utils';
 import Navbar from '@/components/ui/Navbar';
 import Image from 'next/image';
 
@@ -14,8 +16,10 @@ export default function ProductDetailPage() {
   
   const { product, loading } = useProduct(id);
   const { addItem } = useCartStore();
+  const { settings } = useStoreSettingsStore();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const currencySymbol = settings?.currencySymbol || '₨';
 
   if (loading) {
     return (
@@ -113,7 +117,7 @@ export default function ProductDetailPage() {
             )}
             
             <div className="text-4xl font-bold text-blue-600 mb-6">
-              ${product.price.toFixed(2)}
+              {formatPrice(product.price, currencySymbol)}
             </div>
 
             {product.description && (

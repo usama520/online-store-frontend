@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_ORDER = gql`
-  mutation CreateOrder($input: CreateOrderInputType!) {
+  mutation CreateOrder($input: CreateOrderInput!) {
     createOrder(input: $input) {
       order {
         id
@@ -122,6 +122,7 @@ export const UPDATE_STORE_SETTINGS = gql`
         storeName
         primaryColor
         secondaryColor
+        currencySymbol
         bankAccountName
         bankAccountNumber
         bankName

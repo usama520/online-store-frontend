@@ -1,15 +1,19 @@
 'use client';
 
 import { useQuery } from '@apollo/client';
-import { GET_ORDERS, GET_PRODUCTS } from '@/lib/graphql/queries';
-import { Order, Product } from '@/lib/types';
+import { GET_ORDERS, GET_PRODUCTS, GET_STORE_SETTINGS } from '@/lib/graphql/queries';
+import { formatPrice } from '@/lib/utils';
+import { Order, Product, StoreSettings } from '@/lib/types';
 
 export default function AdminDashboard() {
   const { data: ordersData } = useQuery(GET_ORDERS);
   const { data: productsData } = useQuery(GET_PRODUCTS);
+  const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   
   const orders = (ordersData?.orders || []) as Order[];
   const products = (productsData?.products || []) as Product[];
+  const storeSettings = settingsData?.storeSettings as StoreSettings | null;
+  const currencySymbol = storeSettings?.currencySymbol || '₨';
   
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
@@ -33,7 +37,7 @@ export default function AdminDashboard() {
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-2">Total Revenue</h3>
-          <p className="text-3xl font-bold text-green-600">${totalRevenue.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-green-600">{formatPrice(totalRevenue, currencySymbol)}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -61,7 +65,7 @@ export default function AdminDashboard() {
                 <tr key={order.id} className="border-b hover:bg-gray-50">
                   <td className="py-3 px-4 text-sm text-gray-800">#{order.id.substring(0, 8)}</td>
                   <td className="py-3 px-4 text-sm text-gray-800">{order.customerName}</td>
-                  <td className="py-3 px-4 text-sm text-gray-800">${order.totalAmount.toFixed(2)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{formatPrice(order.totalAmount, currencySymbol)}</td>
                   <td className="py-3 px-4">
                     <span className={`inline-block px-2 py-1 text-xs rounded-full ${
                       order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :

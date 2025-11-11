@@ -16,6 +16,7 @@ export default function AdminSettingsPage() {
     storeName: '',
     primaryColor: '',
     secondaryColor: '',
+    currencySymbol: '',
     bankAccountName: '',
     bankAccountNumber: '',
     bankName: '',
@@ -29,6 +30,7 @@ export default function AdminSettingsPage() {
         storeName: storeSettings.storeName || '',
         primaryColor: storeSettings.primaryColor || '#3B82F6',
         secondaryColor: storeSettings.secondaryColor || '#10B981',
+        currencySymbol: storeSettings.currencySymbol || '₨',
         bankAccountName: storeSettings.bankAccountName || '',
         bankAccountNumber: storeSettings.bankAccountNumber || '',
         bankName: storeSettings.bankName || '',
@@ -99,6 +101,24 @@ export default function AdminSettingsPage() {
                   className="w-full h-10 border border-gray-300 rounded-lg cursor-pointer"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Currency Symbol *
+              </label>
+              <input
+                type="text"
+                value={formData.currencySymbol}
+                onChange={(e) => setFormData({ ...formData, currencySymbol: e.target.value })}
+                placeholder="e.g., ₨, $, €, £"
+                maxLength={3}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                This symbol will be displayed before all prices (e.g., ₨99.99)
+              </p>
             </div>
           </div>
         </div>

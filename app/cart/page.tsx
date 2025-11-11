@@ -2,13 +2,17 @@
 
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/zustand/cartStore';
+import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
+import { formatPrice } from '@/lib/utils';
 import Navbar from '@/components/ui/Navbar';
 import Image from 'next/image';
 
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCartStore();
+  const { settings } = useStoreSettingsStore();
   const total = getTotalPrice();
+  const currencySymbol = settings?.currencySymbol || '₨';
 
   if (items.length === 0) {
     return (
@@ -63,7 +67,7 @@ export default function CartPage() {
                   {/* Details */}
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                    <p className="text-blue-600 font-bold">${item.price.toFixed(2)}</p>
+                    <p className="text-blue-600 font-bold">{formatPrice(item.price, currencySymbol)}</p>
                   </div>
 
                   {/* Quantity */}
@@ -87,7 +91,7 @@ export default function CartPage() {
 
                   {/* Subtotal */}
                   <div className="text-right font-semibold text-gray-800 w-24">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {formatPrice(item.price * item.quantity, currencySymbol)}
                   </div>
 
                   {/* Remove */}
@@ -121,7 +125,7 @@ export default function CartPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{formatPrice(total, currencySymbol)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
@@ -129,7 +133,7 @@ export default function CartPage() {
                 </div>
                 <div className="border-t pt-3 flex justify-between text-xl font-bold text-gray-800">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{formatPrice(total, currencySymbol)}</span>
                 </div>
               </div>
 

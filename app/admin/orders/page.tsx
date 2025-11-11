@@ -2,16 +2,20 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_ORDERS } from '@/lib/graphql/queries';
+import { GET_ORDERS, GET_STORE_SETTINGS } from '@/lib/graphql/queries';
 import { UPDATE_ORDER_STATUS, UPDATE_PAYMENT_STATUS } from '@/lib/graphql/mutations';
-import { Order } from '@/lib/types';
+import { formatPrice } from '@/lib/utils';
+import { Order, StoreSettings } from '@/lib/types';
 
 export default function AdminOrdersPage() {
   const { data, refetch } = useQuery(GET_ORDERS);
+  const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
   const [updatePaymentStatus] = useMutation(UPDATE_PAYMENT_STATUS);
   
   const orders = (data?.orders || []) as Order[];
+  const storeSettings = settingsData?.storeSettings as StoreSettings | null;
+  const currencySymbol = storeSettings?.currencySymbol || '₨';
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
@@ -72,7 +76,7 @@ export default function AdminOrdersPage() {
                     <div className="text-xs text-gray-500">{order.customerEmail}</div>
                   </div>
                 </td>
-                <td className="py-3 px-4 text-sm text-gray-800">${order.totalAmount.toFixed(2)}</td>
+                <td className="py-3 px-4 text-sm text-gray-800">{formatPrice(order.totalAmount, currencySymbol)}</td>
                 <td className="py-3 px-4">
                   <span className={`inline-block px-2 py-1 text-xs rounded-full ${
                     order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -131,7 +135,7 @@ export default function AdminOrdersPage() {
                 <p><span className="font-medium">Name:</span> {selectedOrder.customerName}</p>
                 <p><span className="font-medium">Email:</span> {selectedOrder.customerEmail}</p>
                 <p><span className="font-medium">Phone:</span> {selectedOrder.customerPhone}</p>
-                <p><span className="font-medium">Address:</span> {selectedOrder.customerAddress}</p>
+                <p><span className="font-medium">Address:</span> {selectedOrder.streetAddress}, {selectedOrder.city}{selectedOrder.postalCode ? `, ${selectedOrder.postalCode}` : ''}</p>
               </div>
             </div>
 
@@ -153,15 +157,15 @@ export default function AdminOrdersPage() {
                       <tr key={item.id} className="border-t">
                         <td className="py-2 px-3 text-sm">{item.product.name}</td>
                         <td className="py-2 px-3 text-sm">{item.quantity}</td>
-                        <td className="py-2 px-3 text-sm">${item.price.toFixed(2)}</td>
-                        <td className="py-2 px-3 text-sm">${item.subtotal.toFixed(2)}</td>
+                        <td className="py-2 px-3 text-sm">{formatPrice(item.price, currencySymbol)}</td>
+                        <td className="py-2 px-3 text-sm">{formatPrice(item.subtotal, currencySymbol)}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot className="bg-gray-50 font-semibold">
                     <tr>
                       <td colSpan={3} className="py-2 px-3 text-right">Total:</td>
-                      <td className="py-2 px-3">${selectedOrder.totalAmount.toFixed(2)}</td>
+                      <td className="py-2 px-3">{formatPrice(selectedOrder.totalAmount, currencySymbol)}</td>
                     </tr>
                   </tfoot>
                 </table>

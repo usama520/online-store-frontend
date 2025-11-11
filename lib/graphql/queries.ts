@@ -56,6 +56,7 @@ export const GET_STORE_SETTINGS = gql`
       logoUrl
       primaryColor
       secondaryColor
+      currencySymbol
       bankAccountName
       bankAccountNumber
       bankName
@@ -72,7 +73,9 @@ export const GET_ORDER = gql`
       customerName
       customerEmail
       customerPhone
-      customerAddress
+      streetAddress
+      city
+      postalCode
       status
       totalAmount
       createdAt
@@ -103,10 +106,25 @@ export const GET_ORDERS = gql`
       id
       customerName
       customerEmail
+      customerPhone
+      streetAddress
+      city
+      postalCode
       status
       totalAmount
       createdAt
+      orderItems {
+        id
+        quantity
+        price
+        subtotal
+        product {
+          id
+          name
+        }
+      }
       payment {
+        id
         paymentMethod
         status
       }
