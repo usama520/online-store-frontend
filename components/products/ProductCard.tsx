@@ -1,0 +1,54 @@
+import Link from 'next/link';
+import Image from 'next/image';
+import { Product } from '@/lib/types';
+
+interface ProductCardProps {
+  product: Product;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const imageUrl = product.images[0] || '/placeholder-product.png';
+
+  return (
+    <Link href={`/products/${product.id}`}>
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+        <div className="relative h-64 bg-gray-200">
+          {product.images[0] && (
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
+          )}
+          {!product.inStock && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">Out of Stock</span>
+            </div>
+          )}
+        </div>
+        <div className="p-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+              {product.description}
+            </p>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="text-2xl font-bold text-blue-600">
+              ${product.price.toFixed(2)}
+            </span>
+            {product.inStock && (
+              <span className="text-sm text-gray-500">
+                {product.stockQuantity} in stock
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+

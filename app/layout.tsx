@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ApolloProvider } from "@/lib/providers/ApolloProvider";
 
 export const metadata: Metadata = {
   title: "My Online Store",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ApolloProvider>{children}</ApolloProvider>
+      </body>
     </html>
   );
 }
