@@ -26,7 +26,13 @@ export const useAuth = () => {
 
   const registerUser = async (email: string, password: string, passwordConfirmation: string) => {
     const { data } = await registerUserMutation({
-      variables: { email, password, passwordConfirmation },
+      variables: { 
+        input: {
+          email, 
+          password, 
+          passwordConfirmation 
+        }
+      },
     });
 
     if (data.registerUser.errors.length > 0) {

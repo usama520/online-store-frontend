@@ -11,12 +11,12 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const imageUrl = product.images[0] || '/placeholder-product.png';
   const { settings } = useStoreSettingsStore();
-  const currencySymbol = settings?.currencySymbol || '₨';
+  const currencySymbol = settings?.currencySymbol || 'Rs.';
 
   return (
     <Link href={`/products/${product.id}`}>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-        <div className="relative h-64 bg-gray-200">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
+        <div className="relative h-64 bg-gray-200 flex-shrink-0">
           {product.images[0] && (
             <Image
               src={imageUrl}
@@ -31,16 +31,20 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
         </div>
-        <div className="p-4">
+        <div className="p-4 flex flex-col flex-grow">
           <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">
             {product.name}
           </h3>
-          {product.description && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-              {product.description}
-            </p>
-          )}
-          <div className="flex justify-between items-center">
+          <div className="flex-grow min-h-[3rem] mb-3">
+            {product.description ? (
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {product.description}
+              </p>
+            ) : (
+              <div className="text-sm text-gray-400">No description</div>
+            )}
+          </div>
+          <div className="flex justify-between items-center mt-auto">
             <span className="text-2xl font-bold text-blue-600">
               {formatPrice(product.price, currencySymbol)}
             </span>

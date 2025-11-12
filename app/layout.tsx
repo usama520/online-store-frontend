@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ApolloProvider } from "@/lib/providers/ApolloProvider";
+import { ToastProvider } from "@/lib/providers/ToastProvider";
+import { ToastWrapper } from "@/components/ui/ToastWrapper";
 
 export const metadata: Metadata = {
   title: "My Online Store",
@@ -15,7 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ApolloProvider>{children}</ApolloProvider>
+        <ApolloProvider>
+          <ToastProvider>
+            {children}
+            <ToastWrapper />
+          </ToastProvider>
+        </ApolloProvider>
       </body>
     </html>
   );

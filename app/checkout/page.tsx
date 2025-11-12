@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/zustand/cartStore';
 import { useCheckout } from '@/lib/hooks/useCheckout';
+import { useToast } from '@/lib/hooks/useToast';
 import { useQuery } from '@apollo/client';
 import { GET_STORE_SETTINGS } from '@/lib/graphql/queries';
 import { formatPrice } from '@/lib/utils';
@@ -14,9 +15,10 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotalPrice } = useCartStore();
   const { checkout, loading } = useCheckout();
+  const { showError } = useToast();
   const { data } = useQuery(GET_STORE_SETTINGS);
   const storeSettings = data?.storeSettings as StoreSettings | null;
-  const currencySymbol = storeSettings?.currencySymbol || '₨';
+  const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
   
   const [formData, setFormData] = useState({
     customerName: '',
@@ -69,7 +71,7 @@ export default function CheckoutPage() {
     try {
       await checkout(formData);
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      showError(error instanceof Error ? error.message : 'Failed to place order');
     }
   };
 

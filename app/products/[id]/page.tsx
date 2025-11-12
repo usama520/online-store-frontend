@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useProduct } from '@/lib/hooks/useProducts';
 import { useCartStore } from '@/lib/zustand/cartStore';
 import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
+import { useToast } from '@/lib/hooks/useToast';
 import { formatPrice } from '@/lib/utils';
 import Navbar from '@/components/ui/Navbar';
 import Image from 'next/image';
@@ -17,9 +18,10 @@ export default function ProductDetailPage() {
   const { product, loading } = useProduct(id);
   const { addItem } = useCartStore();
   const { settings } = useStoreSettingsStore();
+  const { showSuccess } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const currencySymbol = settings?.currencySymbol || '₨';
+  const currencySymbol = settings?.currencySymbol || 'Rs.';
 
   if (loading) {
     return (
@@ -53,7 +55,7 @@ export default function ProductDetailPage() {
       image: product.images[0],
       stockQuantity: product.stockQuantity,
     });
-    alert('Added to cart!');
+    showSuccess('Item added to cart');
   };
 
   const handleBuyNow = () => {
@@ -149,7 +151,7 @@ export default function ProductDetailPage() {
                     max={product.stockQuantity}
                     value={quantity}
                     onChange={(e) => setQuantity(Math.max(1, Math.min(product.stockQuantity, parseInt(e.target.value) || 1)))}
-                    className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900"
                   />
                 </div>
 

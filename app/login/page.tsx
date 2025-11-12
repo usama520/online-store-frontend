@@ -2,9 +2,12 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function AdminLoginPage() {
-  const { loginAdmin } = useAuth();
+export default function LoginPage() {
+  const { loginUser } = useAuth();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,7 +21,8 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      await loginAdmin(formData.email, formData.password);
+      await loginUser(formData.email, formData.password);
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -29,7 +33,7 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Admin Login</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Customer Login</h1>
         
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
@@ -73,8 +77,11 @@ export default function AdminLoginPage() {
           </button>
         </form>
         
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Default: admin@mystore.com / password123
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
+            Sign up
+          </Link>
         </p>
       </div>
     </div>

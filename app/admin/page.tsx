@@ -13,7 +13,7 @@ export default function AdminDashboard() {
   const orders = (ordersData?.orders || []) as Order[];
   const products = (productsData?.products || []) as Product[];
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
-  const currencySymbol = storeSettings?.currencySymbol || '₨';
+  const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
   
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);

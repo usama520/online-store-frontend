@@ -30,7 +30,7 @@ export default function AdminSettingsPage() {
         storeName: storeSettings.storeName || '',
         primaryColor: storeSettings.primaryColor || '#3B82F6',
         secondaryColor: storeSettings.secondaryColor || '#10B981',
-        currencySymbol: storeSettings.currencySymbol || '₨',
+        currencySymbol: storeSettings.currencySymbol || 'Rs.',
         bankAccountName: storeSettings.bankAccountName || '',
         bankAccountNumber: storeSettings.bankAccountNumber || '',
         bankName: storeSettings.bankName || '',
@@ -73,7 +73,7 @@ export default function AdminSettingsPage() {
                 value={formData.storeName}
                 onChange={(e) => setFormData({ ...formData, storeName: e.target.value })}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -111,13 +111,13 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={formData.currencySymbol}
                 onChange={(e) => setFormData({ ...formData, currencySymbol: e.target.value })}
-                placeholder="e.g., ₨, $, €, £"
+                placeholder="e.g., Rs., $, €, £"
                 maxLength={3}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               />
               <p className="text-xs text-gray-500 mt-1">
-                This symbol will be displayed before all prices (e.g., ₨99.99)
+                This symbol will be displayed before all prices (e.g., Rs. 99.99)
               </p>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function AdminSettingsPage() {
                 type="email"
                 value={formData.contactEmail}
                 onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function AdminSettingsPage() {
                 type="tel"
                 value={formData.contactPhone}
                 onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               />
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function AdminSettingsPage() {
                 value={formData.bankName}
                 onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
                 placeholder="e.g., National Bank"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -184,7 +184,7 @@ export default function AdminSettingsPage() {
                 value={formData.bankAccountName}
                 onChange={(e) => setFormData({ ...formData, bankAccountName: e.target.value })}
                 placeholder="e.g., My Online Store LLC"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -197,7 +197,7 @@ export default function AdminSettingsPage() {
                 value={formData.bankAccountNumber}
                 onChange={(e) => setFormData({ ...formData, bankAccountNumber: e.target.value })}
                 placeholder="e.g., 1234567890"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               />
             </div>
           </div>

@@ -19,7 +19,7 @@ export default function OrderSuccessPage() {
   
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
-  const currencySymbol = storeSettings?.currencySymbol || '₨';
+  const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
   
   const order = data?.order as Order | null;
 

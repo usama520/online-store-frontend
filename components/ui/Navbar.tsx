@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/zustand/cartStore';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -7,7 +8,13 @@ import { useAuth } from '@/lib/hooks/useAuth';
 export default function Navbar() {
   const { getTotalItems } = useCartStore();
   const { isAuthenticated, user, isAdmin, logout } = useAuth();
-  const cartItemCount = getTotalItems();
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const cartItemCount = isMounted ? getTotalItems() : 0;
 
   return (
     <nav className="bg-white shadow-md">
@@ -64,9 +71,14 @@ export default function Navbar() {
                 Logout
               </button>
             ) : (
-              <Link href="/login" className="text-gray-700 hover:text-blue-600">
-                Login
-              </Link>
+              <>
+                <Link href="/login" className="text-gray-700 hover:text-blue-600">
+                  Login
+                </Link>
+                <Link href="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Sign Up
+                </Link>
+              </>
             )}
           </div>
         </div>

@@ -15,7 +15,7 @@ export default function AdminOrdersPage() {
   
   const orders = (data?.orders || []) as Order[];
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
-  const currencySymbol = storeSettings?.currencySymbol || '₨';
+  const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
@@ -178,7 +178,7 @@ export default function AdminOrdersPage() {
               <select
                 value={selectedOrder.status}
                 onChange={(e) => handleUpdateOrderStatus(selectedOrder.id, e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               >
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
@@ -203,7 +203,7 @@ export default function AdminOrdersPage() {
                     <select
                       value={selectedOrder.payment.status}
                       onChange={(e) => handleUpdatePaymentStatus(selectedOrder.id, e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     >
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/zustand/cartStore';
 import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
@@ -9,10 +10,30 @@ import Image from 'next/image';
 
 export default function CartPage() {
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCartStore();
   const { settings } = useStoreSettingsStore();
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Don't access store values until mounted to prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Loading cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate values after mount check
   const total = getTotalPrice();
-  const currencySymbol = settings?.currencySymbol || '₨';
+  const currencySymbol = settings?.currencySymbol || 'Rs.';
 
   if (items.length === 0) {
     return (
@@ -74,15 +95,15 @@ export default function CartPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                      className="w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                      className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                       disabled={item.quantity <= 1}
                     >
                       -
                     </button>
-                    <span className="w-12 text-center font-medium">{item.quantity}</span>
+                    <span className="w-12 text-center font-medium text-gray-900">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                      className="w-8 h-8 rounded bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                      className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                       disabled={item.quantity >= item.stockQuantity}
                     >
                       +
