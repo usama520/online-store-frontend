@@ -41,8 +41,8 @@ export const REGISTER_USER = gql`
 `;
 
 export const LOGIN_ADMIN = gql`
-  mutation LoginAdmin($email: String!, $password: String!) {
-    loginAdmin(email: $email, password: $password) {
+  mutation LoginAdmin($input: LoginAdminInput!) {
+    loginAdmin(input: $input) {
       adminUser {
         id
         email
@@ -54,27 +54,36 @@ export const LOGIN_ADMIN = gql`
 `;
 
 export const CREATE_PRODUCT = gql`
-  mutation CreateProduct($input: ProductInputType!) {
+  mutation CreateProduct($input: CreateProductInput!) {
     createProduct(input: $input) {
       product {
-        id
         name
+        description
+        sku
         price
         stockQuantity
+        images
+        category {
+          name
+        }
       }
       errors
     }
   }
 `;
 
+
 export const UPDATE_PRODUCT = gql`
-  mutation UpdateProduct($id: ID!, $input: ProductInputType!) {
-    updateProduct(id: $id, input: $input) {
+  mutation UpdateProduct($input: UpdateProductInput!) {
+    updateProduct(input: $input) {
       product {
         id
         name
+        description
+        sku
         price
         stockQuantity
+        images
       }
       errors
     }

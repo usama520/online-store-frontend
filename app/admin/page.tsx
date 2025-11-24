@@ -9,12 +9,12 @@ export default function AdminDashboard() {
   const { data: ordersData } = useQuery(GET_ORDERS);
   const { data: productsData } = useQuery(GET_PRODUCTS);
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
-  
+
   const orders = (ordersData?.orders || []) as Order[];
   const products = (productsData?.products || []) as Product[];
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
   const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
-  
+
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
   const lowStockProducts = products.filter(p => p.stockQuantity < 10).length;

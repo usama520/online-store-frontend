@@ -13,7 +13,7 @@ export default function CartPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCartStore();
   const { settings } = useStoreSettingsStore();
-  
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -56,7 +56,7 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Shopping Cart</h1>
 
@@ -142,7 +142,7 @@ export default function CartPage() {
           <div>
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
-              
+
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
@@ -164,7 +164,7 @@ export default function CartPage() {
               >
                 Proceed to Checkout
               </button>
-              
+
               <button
                 onClick={() => router.push('/products')}
                 className="w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"

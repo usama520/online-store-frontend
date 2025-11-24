@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/zustand/cartStore';
 import { useCheckout } from '@/lib/hooks/useCheckout';
 import { useToast } from '@/lib/hooks/useToast';
-import { useQuery } from '@apollo/client';
+import { useQuery, ApolloError } from '@apollo/client';
 import { GET_STORE_SETTINGS } from '@/lib/graphql/queries';
 import { formatPrice } from '@/lib/utils';
 import Navbar from '@/components/ui/Navbar';
@@ -19,7 +19,7 @@ export default function CheckoutPage() {
   const { data } = useQuery(GET_STORE_SETTINGS);
   const storeSettings = data?.storeSettings as StoreSettings | null;
   const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
-  
+
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -48,7 +48,7 @@ export default function CheckoutPage() {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.customerName.trim()) newErrors.customerName = 'Name is required';
     if (!formData.customerEmail.trim()) newErrors.customerEmail = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) {
@@ -58,27 +58,32 @@ export default function CheckoutPage() {
     if (!formData.streetAddress.trim()) newErrors.streetAddress = 'Street address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     // Postal code is optional, no validation needed
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validate()) return;
-    
+
     try {
       await checkout(formData);
     } catch (error) {
-      showError(error instanceof Error ? error.message : 'Failed to place order');
+      if (error instanceof ApolloError) {
+        console.error('[GraphQL Error in handleSubmit]:', error);
+        showError('Something went wrong');
+      } else {
+        showError(error instanceof Error ? error.message : 'Failed to place order');
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Checkout</h1>
 
@@ -89,7 +94,7 @@ export default function CheckoutPage() {
               {/* Customer Information */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">Customer Information</h2>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -192,7 +197,7 @@ export default function CheckoutPage() {
               {/* Payment Method */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">Payment Method</h2>
-                
+
                 <div className="space-y-3">
                   <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500">
                     <input
@@ -251,7 +256,7 @@ export default function CheckoutPage() {
             <div>
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
-                
+
                 <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
                   {items.map((item) => (
                     <div key={item.productId} className="flex justify-between text-sm">

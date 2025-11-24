@@ -1,17 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, ApolloError } from '@apollo/client';
 import { GET_STORE_SETTINGS } from '@/lib/graphql/queries';
 import { UPDATE_STORE_SETTINGS } from '@/lib/graphql/mutations';
 import { StoreSettings } from '@/lib/types';
+import { useToast } from '@/lib/hooks/useToast';
 
 export default function AdminSettingsPage() {
   const { data, refetch } = useQuery(GET_STORE_SETTINGS);
   const [updateSettings] = useMutation(UPDATE_STORE_SETTINGS);
-  
+  const { showError, showSuccess } = useToast();
+
   const storeSettings = data?.storeSettings as StoreSettings | null;
-  
+
   const [formData, setFormData] = useState({
     storeName: '',
     primaryColor: '',
@@ -42,15 +44,20 @@ export default function AdminSettingsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       await updateSettings({
         variables: { input: formData },
       });
       refetch();
-      alert('Settings updated successfully!');
+      showSuccess('Settings updated successfully!');
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      if (error instanceof ApolloError) {
+        console.error('[GraphQL Error in handleSubmit]:', error);
+        showError('Something went wrong');
+      } else {
+        showError(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
   };
 
@@ -62,7 +69,7 @@ export default function AdminSettingsPage() {
         {/* General Settings */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">General Settings</h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -126,7 +133,7 @@ export default function AdminSettingsPage() {
         {/* Contact Information */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Contact Information</h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -160,7 +167,7 @@ export default function AdminSettingsPage() {
           <p className="text-sm text-gray-600 mb-4">
             These details will be displayed to customers who choose bank transfer as payment method.
           </p>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

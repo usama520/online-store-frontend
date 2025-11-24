@@ -21,9 +21,9 @@ interface StoreSettingsStore {
 
 export const useStoreSettingsStore = create<StoreSettingsStore>((set, get) => ({
   settings: null,
-  
+
   setSettings: (settings) => set({ settings }),
-  
+
   getStoreName: () => {
     const state = get();
     return state.settings?.storeName || process.env.NEXT_PUBLIC_STORE_NAME || 'My Online Store';

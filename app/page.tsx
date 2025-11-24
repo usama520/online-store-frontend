@@ -7,14 +7,14 @@ import Link from 'next/link';
 
 export default function Home() {
   const { products, loading } = useProducts();
-  
+
   // Show first 8 products on home page
   const featuredProducts = products.slice(0, 8);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

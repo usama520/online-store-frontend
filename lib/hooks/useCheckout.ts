@@ -42,7 +42,7 @@ export const useCheckout = () => {
     const order = result.createOrder.order;
     clearCart();
     router.push(`/orders/${order.id}`);
-    
+
     return order;
   };
 

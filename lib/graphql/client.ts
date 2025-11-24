@@ -1,14 +1,15 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
+import { createUploadLink } from 'apollo-upload-client';
 
-const httpLink = createHttpLink({
+const uploadLink = createUploadLink({
   uri: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
-  // Get token from localStorage if exists
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  
+
   return {
     headers: {
       ...headers,
@@ -17,8 +18,23 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+      console.error(
+        `[GraphQL Error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+        extensions ? `Extensions: ${JSON.stringify(extensions, null, 2)}` : ''
+      );
+    });
+  }
+
+  if (networkError) {
+    console.error(`[Network Error]: ${networkError.message}`, networkError);
+  }
+});
+
 export const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([errorLink, authLink, uploadLink]),
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {
@@ -26,4 +42,3 @@ export const apolloClient = new ApolloClient({
     },
   },
 });
-

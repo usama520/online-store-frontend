@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuthStore } from '@/lib/zustand/authStore';
 import Link from 'next/link';
 
 export default function AdminLayout({
@@ -11,14 +12,38 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAdmin, isAuthenticated } = useAuth();
+  const { _hasHydrated } = useAuthStore();
+
+  // Skip auth check for login page
+  const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
-    if (!isAuthenticated || !isAdmin) {
+    // Wait for hydration before checking auth
+    if (!_hasHydrated) return;
+
+    // Only redirect if not on login page
+    if (!isLoginPage && (!isAuthenticated || !isAdmin)) {
       router.push('/admin/login');
     }
-  }, [isAuthenticated, isAdmin, router]);
+  }, [isAuthenticated, isAdmin, router, isLoginPage, _hasHydrated]);
 
+  // If on login page, render children directly without auth check
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
+  // Show loading state while hydrating
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  // For other admin routes, require authentication
   if (!isAuthenticated || !isAdmin) {
     return null;
   }

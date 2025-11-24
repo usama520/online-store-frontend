@@ -9,7 +9,7 @@ export default function Navbar() {
   const { getTotalItems } = useCartStore();
   const { isAuthenticated, user, isAdmin, logout } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
-  
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -35,7 +35,7 @@ export default function Navbar() {
                 {user?.email}
               </Link>
             )}
-            
+
             {isAdmin && (
               <Link href="/admin" className="text-gray-700 hover:text-blue-600">
                 Admin

@@ -11,7 +11,7 @@ import { Category } from '@/lib/types';
 export default function ProductsPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  
+
   const { products, loading } = useProducts(selectedCategory || undefined, search || undefined);
   const { data: categoriesData } = useQuery(GET_CATEGORIES);
   const categories = (categoriesData?.categories || []) as Category[];
@@ -19,7 +19,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">All Products</h1>
 

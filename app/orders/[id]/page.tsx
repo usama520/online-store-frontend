@@ -11,16 +11,16 @@ import Link from 'next/link';
 export default function OrderSuccessPage() {
   const params = useParams();
   const id = params.id as string;
-  
+
   const { data, loading } = useQuery(GET_ORDER, {
     variables: { id },
     skip: !id,
   });
-  
+
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
   const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
-  
+
   const order = data?.order as Order | null;
 
   if (loading) {
@@ -49,7 +49,7 @@ export default function OrderSuccessPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Success Message */}
         <div className="bg-green-50 border-2 border-green-500 rounded-lg p-8 mb-8 text-center">
@@ -65,7 +65,7 @@ export default function OrderSuccessPage() {
         {/* Order Details */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Details</h2>
-          
+
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
               <p className="text-sm text-gray-600">Order Number</p>
@@ -103,7 +103,7 @@ export default function OrderSuccessPage() {
         {/* Order Items */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Items</h2>
-          
+
           <div className="space-y-4">
             {order.orderItems.map((item) => (
               <div key={item.id} className="flex justify-between items-center py-3 border-b last:border-b-0">

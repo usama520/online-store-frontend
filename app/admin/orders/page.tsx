@@ -1,18 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, ApolloError } from '@apollo/client';
 import { GET_ORDERS, GET_STORE_SETTINGS } from '@/lib/graphql/queries';
 import { UPDATE_ORDER_STATUS, UPDATE_PAYMENT_STATUS } from '@/lib/graphql/mutations';
 import { formatPrice } from '@/lib/utils';
 import { Order, StoreSettings } from '@/lib/types';
+import { useToast } from '@/lib/hooks/useToast';
 
 export default function AdminOrdersPage() {
   const { data, refetch } = useQuery(GET_ORDERS);
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
   const [updatePaymentStatus] = useMutation(UPDATE_PAYMENT_STATUS);
-  
+  const { showError, showSuccess } = useToast();
+
   const orders = (data?.orders || []) as Order[];
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
   const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
@@ -28,8 +30,14 @@ export default function AdminOrdersPage() {
         const updated = orders.find(o => o.id === orderId);
         if (updated) setSelectedOrder(updated);
       }
+      showSuccess("Order status updated successfully");
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      if (error instanceof ApolloError) {
+        console.error('[GraphQL Error in handleUpdateOrderStatus]:', error);
+        showError('Something went wrong');
+      } else {
+        showError(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
   };
 
@@ -43,8 +51,14 @@ export default function AdminOrdersPage() {
         const updated = orders.find(o => o.id === orderId);
         if (updated) setSelectedOrder(updated);
       }
+      showSuccess("Payment status updated successfully");
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      if (error instanceof ApolloError) {
+        console.error('[GraphQL Error in handleUpdatePaymentStatus]:', error);
+        showError('Something went wrong');
+      } else {
+        showError(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
   };
 

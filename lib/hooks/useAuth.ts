@@ -26,11 +26,11 @@ export const useAuth = () => {
 
   const registerUser = async (email: string, password: string, passwordConfirmation: string) => {
     const { data } = await registerUserMutation({
-      variables: { 
+      variables: {
         input: {
-          email, 
-          password, 
-          passwordConfirmation 
+          email,
+          password,
+          passwordConfirmation
         }
       },
     });
@@ -45,7 +45,12 @@ export const useAuth = () => {
 
   const loginAdmin = async (email: string, password: string) => {
     const { data } = await loginAdminMutation({
-      variables: { email, password },
+      variables: {
+        input: {
+          email,
+          password
+        }
+      },
     });
 
     if (data.loginAdmin.errors.length > 0) {
