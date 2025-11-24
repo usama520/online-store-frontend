@@ -245,7 +245,7 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     <p className="mt-2 text-sm text-gray-600">
-                      Please transfer the amount and we'll confirm your order once payment is received.
+                      Please transfer the amount and we&apos;ll confirm your order once payment is received.
                     </p>
                   </div>
                 )}

@@ -1,17 +1,5 @@
 import { create } from 'zustand';
-
-interface StoreSettings {
-  id: string;
-  storeName: string;
-  logoUrl?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
-  bankAccountName?: string;
-  bankAccountNumber?: string;
-  bankName?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-}
+import { StoreSettings } from '../types';
 
 interface StoreSettingsStore {
   settings: StoreSettings | null;
