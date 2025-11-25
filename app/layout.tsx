@@ -5,8 +5,10 @@ import { ToastProvider } from "@/lib/providers/ToastProvider";
 import { ToastWrapper } from "@/components/ui/ToastWrapper";
 
 export const metadata: Metadata = {
-  title: "My Online Store",
-  description: "Your one-stop shop for amazing products",
+  title: process.env.NEXT_PUBLIC_STORE_TITLE || "My Online Store",
+  description:
+    process.env.NEXT_PUBLIC_STORE_DESCRIPTION ||
+    "Your one-stop shop for amazing products",
 };
 
 export default function RootLayout({

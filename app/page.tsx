@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useProducts } from '@/lib/hooks/useProducts';
-import ProductGrid from '@/components/products/ProductGrid';
-import Navbar from '@/components/ui/Navbar';
-import Link from 'next/link';
+import { useProducts } from "@/lib/hooks/useProducts";
+import ProductGrid from "@/components/products/ProductGrid";
+import Navbar from "@/components/ui/Navbar";
+import Link from "next/link";
 
 export default function Home() {
   const { products, loading } = useProducts();
@@ -18,8 +18,14 @@ export default function Home() {
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-4">Welcome to My Online Store</h1>
-          <p className="text-xl mb-8">Discover amazing products at great prices</p>
+          <h1 className="text-5xl font-bold mb-4">
+            Welcome to{" "}
+            {process.env.NEXT_PUBLIC_STORE_TITLE || "My Online Store"}
+          </h1>
+          <p className="text-xl mb-8">
+            {process.env.NEXT_PUBLIC_STORE_DESCRIPTION ||
+              "Discover amazing products at great prices"}
+          </p>
           <Link
             href="/products"
             className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
@@ -32,8 +38,13 @@ export default function Home() {
       {/* Featured Products */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Featured Products</h2>
-          <Link href="/products" className="text-blue-600 hover:text-blue-700 font-medium">
+          <h2 className="text-3xl font-bold text-gray-800">
+            Featured Products
+          </h2>
+          <Link
+            href="/products"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
             View All →
           </Link>
         </div>
