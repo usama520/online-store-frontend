@@ -154,3 +154,14 @@ export const CREATE_CATEGORY = gql`
   }
 `;
 
+export const CREATE_DIRECT_UPLOAD = gql`
+  mutation CreateDirectUpload($input: DirectUploadInput!) {
+    createDirectUpload(input: $input) {
+      directUploadUrl
+      signedBlobId
+      uploadHeaders
+      errors
+    }
+  }
+`;
+

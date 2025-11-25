@@ -71,3 +71,22 @@ export interface AdminUser {
   email: string;
 }
 
+export interface DirectUploadInput {
+  filename: string;
+  byteSize: number;
+  contentType: string;
+  checksum: string;
+}
+
+export interface DirectUploadResponse {
+  directUploadUrl: string;
+  signedBlobId: string;
+  uploadHeaders: Record<string, string>;
+}
+
+export interface UploadProgress {
+  loaded: number;
+  total: number;
+  percentage: number;
+}
+
