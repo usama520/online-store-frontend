@@ -45,12 +45,7 @@ export const useAuth = () => {
 
   const loginAdmin = async (email: string, password: string) => {
     const { data } = await loginAdminMutation({
-      variables: {
-        input: {
-          email,
-          password
-        }
-      },
+      variables: { email, password },
     });
 
     if (data.loginAdmin.errors.length > 0) {

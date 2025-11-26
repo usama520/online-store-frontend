@@ -15,7 +15,7 @@ import {
 import { formatPrice } from "@/lib/utils";
 import { Product, Category, StoreSettings } from "@/lib/types";
 import { useToast } from "@/lib/hooks/useToast";
-import { graphqlUpload } from "@/lib/utils/graphqlUpload";
+import { useDirectUpload } from "@/lib/hooks/useDirectUpload";
 
 export default function AdminProductsPage() {
   const { data, refetch } = useQuery(GET_PRODUCTS);
@@ -42,10 +42,15 @@ export default function AdminProductsPage() {
     categoryId: "",
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [imagePreviews, setImagePreviews] = useState<
-    { file: File; preview: string }[]
+    { file: File; preview: string; signedId?: string }[]
   >([]);
-  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<
+    { url: string; id: string }[]
+  >([]);
+  const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
+  const { uploadFile } = useDirectUpload();
 
   const resetForm = () => {
     setFormData({
@@ -59,6 +64,7 @@ export default function AdminProductsPage() {
     setEditingProduct(null);
     setImagePreviews([]);
     setExistingImages([]);
+    setImagesToRemove([]);
   };
 
   const handleEdit = (product: Product) => {
@@ -71,14 +77,30 @@ export default function AdminProductsPage() {
       stockQuantity: product.stockQuantity.toString(),
       categoryId: product.category?.id || "",
     });
-    setExistingImages(product.images || []);
+    // Map existing images with their IDs
+    const imagesWithIds = (product.images || []).map((url, index) => ({
+      url,
+      id: product.imageIds?.[index] || "",
+    }));
+    setExistingImages(imagesWithIds);
     setImagePreviews([]);
+    setImagesToRemove([]);
     setIsModalOpen(true);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const newPreviews = files.map((file) => ({
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+    const validFiles = files.filter((file) => {
+      if (!allowedTypes.includes(file.type)) {
+        showError(`${file.name}: Only JPEG and PNG images are allowed`);
+        return false;
+      }
+      return true;
+    });
+
+    const newPreviews = validFiles.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
@@ -93,67 +115,87 @@ export default function AdminProductsPage() {
   };
 
   const removeExistingImage = (index: number) => {
-    const newImages = existingImages.filter((_, i) => i !== index);
-    setExistingImages(newImages);
+    const imageToRemove = existingImages[index];
+    if (imageToRemove?.id) {
+      setImagesToRemove((prev) => [...prev, imageToRemove.id]);
+    }
+    setExistingImages(existingImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploading(true);
+    setUploadingImages(true);
 
     try {
-      const input = {
+      // First, upload all new images to get signed blob IDs
+      const signedIds: string[] = [];
+      for (let i = 0; i < imagePreviews.length; i++) {
+        const preview = imagePreviews[i];
+        // Skip if already uploaded
+        if (preview.signedId) {
+          signedIds.push(preview.signedId);
+          continue;
+        }
+
+        try {
+          const result = await uploadFile(preview.file);
+          signedIds.push(result.signedBlobId);
+          // Update preview with signed ID
+          setImagePreviews((prev) =>
+            prev.map((p, idx) =>
+              idx === i ? { ...p, signedId: result.signedBlobId } : p
+            )
+          );
+        } catch (error) {
+          showError(
+            `Failed to upload ${preview.file.name}: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`
+          );
+          setUploading(false);
+          setUploadingImages(false);
+          return;
+        }
+      }
+
+      setUploadingImages(false);
+
+      // Now create/update product with signed blob IDs
+      const input: any = {
         name: formData.name,
         description: formData.description || null,
         price: parseFloat(formData.price),
         sku: formData.sku || null,
         stockQuantity: parseInt(formData.stockQuantity) || 0,
         categoryId: formData.categoryId || null,
+        images: signedIds,
       };
 
-      const files = imagePreviews.map((preview) => preview.file);
+      if (editingProduct) {
+        input.id = editingProduct.id;
+        if (imagesToRemove.length > 0) {
+          input.removeImageIds = imagesToRemove;
+        }
 
-      // If there are files to upload, use multipart GraphQL request
-      if (files.length > 0) {
-        const mutation = editingProduct ? UPDATE_PRODUCT : CREATE_PRODUCT;
-        const variables = editingProduct
-          ? { id: editingProduct.id, input }
-          : { input };
-
-        console.log("VARIABLES", variables);
-        const response = await graphqlUpload({
-          query: mutation,
-          variables,
-          // files,
+        const { data } = await updateProduct({
+          variables: { input },
         });
 
-        const result = await response.json();
-
-        if (result.errors) {
-          // Log GraphQL errors to console
-          console.error(
-            "[GraphQL Error in handleSubmit (file upload)]:",
-            result.errors
-          );
-          throw new Error("GRAPHQL_ERROR"); // Special marker for GraphQL errors
-        }
-
-        const mutationName = editingProduct ? "updateProduct" : "createProduct";
-        if (result.data?.[mutationName]?.errors?.length > 0) {
-          throw new Error(result.data[mutationName].errors.join(", "));
+        const updateErrors = data?.updateProduct?.errors || [];
+        if (updateErrors.length > 0) {
+          showError(updateErrors.join(", "));
+          return;
         }
       } else {
-        // No files, use regular Apollo mutation
-        if (editingProduct) {
-          await updateProduct({
-            variables: {
-              input: { input: { ...input, id: editingProduct.id } },
-            },
-          });
-        } else {
-          await createProduct({
-            variables: { input: { input } },
-          });
+        const { data } = await createProduct({
+          variables: { input },
+        });
+
+        const createErrors = data?.createProduct?.errors || [];
+        if (createErrors.length > 0) {
+          showError(createErrors.join(", "));
+          return;
         }
       }
 
@@ -172,9 +214,6 @@ export default function AdminProductsPage() {
       if (error instanceof ApolloError) {
         console.error("[GraphQL Error in handleSubmit]:", error);
         showError("Something went wrong");
-      } else if (error instanceof Error && error.message === "GRAPHQL_ERROR") {
-        // GraphQL error from graphqlUpload - already logged, just show generic message
-        showError("Something went wrong");
       } else {
         showError(
           `Error: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -182,6 +221,7 @@ export default function AdminProductsPage() {
       }
     } finally {
       setUploading(false);
+      setUploadingImages(false);
     }
   };
 
@@ -414,18 +454,21 @@ export default function AdminProductsPage() {
                 <div className="mb-4">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png"
                     multiple
                     onChange={handleFileSelect}
-                    disabled={uploading}
+                    disabled={uploading || uploadingImages}
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    JPEG and PNG only, max 5MB per file
+                  </p>
                 </div>
 
                 {/* Image Previews (new images to be uploaded) */}
                 {imagePreviews.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-gray-600 mb-2 font-semibold">
                       New images (will be uploaded on save):
                     </p>
                     <div className="grid grid-cols-4 gap-2">
@@ -434,12 +477,20 @@ export default function AdminProductsPage() {
                           <img
                             src={preview.preview}
                             alt={`Preview ${index + 1}`}
-                            className="w-full h-20 object-cover rounded-lg border border-gray-300"
+                            className="w-full h-20 object-cover rounded-lg border-2 border-blue-300"
                           />
+                          {preview.signedId && (
+                            <div className="absolute inset-0 bg-green-500 bg-opacity-50 flex items-center justify-center">
+                              <span className="text-white text-xs font-semibold">
+                                Ready
+                              </span>
+                            </div>
+                          )}
                           <button
                             type="button"
                             onClick={() => removePreview(index)}
-                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                            disabled={uploading || uploadingImages}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs disabled:opacity-50"
                           >
                             ×
                           </button>
@@ -452,25 +503,33 @@ export default function AdminProductsPage() {
                 {/* Existing Images */}
                 {existingImages.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-gray-600 mb-2 font-semibold">
                       Existing product images:
                     </p>
                     <div className="grid grid-cols-4 gap-2">
-                      {existingImages.map((imageUrl, index) => (
+                      {existingImages.map((image, index) => (
                         <div key={index} className="relative group">
                           <img
-                            src={imageUrl}
+                            src={image.url}
                             alt={`Product ${index + 1}`}
-                            className="w-full h-20 object-cover rounded-lg border border-gray-300"
+                            className="w-full h-20 object-cover rounded-lg border-2 border-gray-300"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src =
                                 "/placeholder-product.png";
                             }}
                           />
+                          {imagesToRemove.includes(image.id) && (
+                            <div className="absolute inset-0 bg-red-500 bg-opacity-50 flex items-center justify-center">
+                              <span className="text-white text-xs font-semibold">
+                                Will Remove
+                              </span>
+                            </div>
+                          )}
                           <button
                             type="button"
                             onClick={() => removeExistingImage(index)}
-                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                            disabled={uploading || uploadingImages}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs disabled:opacity-50"
                           >
                             ×
                           </button>
@@ -482,8 +541,8 @@ export default function AdminProductsPage() {
 
                 {existingImages.length === 0 && imagePreviews.length === 0 && (
                   <p className="text-xs text-gray-500">
-                    Select image files to upload. Images will be uploaded when
-                    you save the product.
+                    Select JPEG or PNG image files to upload. Images will be
+                    uploaded and compressed when you save the product.
                   </p>
                 )}
               </div>
@@ -494,7 +553,9 @@ export default function AdminProductsPage() {
                   disabled={uploading}
                   className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {uploading
+                  {uploadingImages
+                    ? "Uploading images..."
+                    : uploading
                     ? "Saving..."
                     : editingProduct
                     ? "Update"

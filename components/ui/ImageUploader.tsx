@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { useDirectUpload } from '@/lib/hooks/useDirectUpload';
-import { useToast } from '@/lib/hooks/useToast';
-import { UploadProgress } from '@/lib/types';
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useDirectUpload } from "@/lib/hooks/useDirectUpload";
+import { useToast } from "@/lib/hooks/useToast";
+import { UploadProgress } from "@/lib/types";
 
 interface ImageUploaderProps {
   onUploadComplete: (signedIds: string[]) => void;
@@ -25,8 +25,8 @@ export default function ImageUploader({
   onUploadComplete,
   multiple = false,
   maxSize = 5 * 1024 * 1024, // 5MB default
-  accept = 'image/*',
-  className = '',
+  accept = "image/jpeg,image/png",
+  className = "",
 }: ImageUploaderProps) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -37,9 +37,7 @@ export default function ImageUploader({
     onProgress: (progress) => {
       // Update progress for the current file being uploaded
       setFiles((prev) => {
-        const updated = prev.map((f) =>
-          f.signedId ? f : { ...f, progress }
-        );
+        const updated = prev.map((f) => (f.signedId ? f : { ...f, progress }));
         filesRef.current = updated;
         return updated;
       });
@@ -48,9 +46,10 @@ export default function ImageUploader({
   const { showError, showSuccess } = useToast();
 
   const validateFile = (file: File): string | null => {
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      return 'Only image files are allowed';
+    // Validate file type (JPEG and PNG only)
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      return "Only JPEG and PNG images are allowed";
     }
 
     // Validate file size
@@ -78,7 +77,7 @@ export default function ImageUploader({
 
         // Check if multiple is false and we already have a file
         if (!multiple && files.length > 0) {
-          errors.push('Only one file is allowed');
+          errors.push("Only one file is allowed");
           return;
         }
 
@@ -89,7 +88,7 @@ export default function ImageUploader({
       });
 
       if (errors.length > 0) {
-        showError(errors.join('; '));
+        showError(errors.join("; "));
       }
 
       if (newFiles.length > 0) {
@@ -131,7 +130,7 @@ export default function ImageUploader({
     handleFiles(e.target.files);
     // Reset input to allow selecting the same file again
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -149,7 +148,7 @@ export default function ImageUploader({
 
   const handleUpload = async () => {
     if (files.length === 0) {
-      showError('Please select at least one file');
+      showError("Please select at least one file");
       return;
     }
 
@@ -161,7 +160,7 @@ export default function ImageUploader({
       // Upload files sequentially to avoid overwhelming the server
       for (let i = 0; i < files.length; i++) {
         const fileWithPreview = files[i];
-        
+
         // Skip if already uploaded
         if (fileWithPreview.signedId) {
           signedIds.push(fileWithPreview.signedId);
@@ -186,9 +185,10 @@ export default function ImageUploader({
             return updated;
           });
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : 'Upload failed';
+          const errorMessage =
+            err instanceof Error ? err.message : "Upload failed";
           errors.push(`${fileWithPreview.file.name}: ${errorMessage}`);
-          
+
           // Update file with error
           setFiles((prev) => {
             const updated = prev.map((f, idx) =>
@@ -201,21 +201,23 @@ export default function ImageUploader({
       }
 
       if (errors.length > 0) {
-        showError(`Some uploads failed: ${errors.join('; ')}`);
+        showError(`Some uploads failed: ${errors.join("; ")}`);
       }
 
       if (signedIds.length > 0) {
         onUploadComplete(signedIds);
         if (errors.length === 0) {
           showSuccess(
-            `Successfully uploaded ${signedIds.length} file${signedIds.length > 1 ? 's' : ''}`
+            `Successfully uploaded ${signedIds.length} file${
+              signedIds.length > 1 ? "s" : ""
+            }`
           );
         }
       } else {
-        showError('All uploads failed');
+        showError("All uploads failed");
       }
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Upload failed');
+      showError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setIsUploading(false);
     }
@@ -254,8 +256,8 @@ export default function ImageUploader({
           border-2 border-dashed rounded-lg p-8 text-center transition-colors
           ${
             isDragging
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 bg-gray-50 hover:border-gray-400"
           }
         `}
       >
@@ -296,10 +298,10 @@ export default function ImageUploader({
               >
                 Click to upload
               </button>
-              {' or drag and drop'}
+              {" or drag and drop"}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              Images only, max {maxSize / (1024 * 1024)}MB per file
+              JPEG and PNG only, max {maxSize / (1024 * 1024)}MB per file
             </p>
           </div>
         </div>
@@ -405,7 +407,10 @@ export default function ImageUploader({
                 </div>
 
                 {/* File Name */}
-                <p className="mt-1 text-xs text-gray-600 truncate" title={fileWithPreview.file.name}>
+                <p
+                  className="mt-1 text-xs text-gray-600 truncate"
+                  title={fileWithPreview.file.name}
+                >
                   {fileWithPreview.file.name}
                 </p>
 
@@ -426,10 +431,12 @@ export default function ImageUploader({
               className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {isUploading
-                ? 'Uploading...'
+                ? "Uploading..."
                 : files.every((f) => f.signedId)
-                ? 'All Uploaded'
-                : `Upload ${files.filter((f) => !f.signedId).length} File${files.filter((f) => !f.signedId).length !== 1 ? 's' : ''}`}
+                ? "All Uploaded"
+                : `Upload ${files.filter((f) => !f.signedId).length} File${
+                    files.filter((f) => !f.signedId).length !== 1 ? "s" : ""
+                  }`}
             </button>
           </div>
         </div>
@@ -437,4 +444,3 @@ export default function ImageUploader({
     </div>
   );
 }
-

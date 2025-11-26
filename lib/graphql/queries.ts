@@ -10,6 +10,7 @@ export const GET_PRODUCTS = gql`
       sku
       stockQuantity
       images
+      imageIds
       inStock
       category {
         id
@@ -29,6 +30,7 @@ export const GET_PRODUCT = gql`
       sku
       stockQuantity
       images
+      imageIds
       inStock
       category {
         id

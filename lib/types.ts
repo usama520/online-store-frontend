@@ -6,6 +6,7 @@ export interface Product {
   sku?: string;
   stockQuantity: number;
   images: string[];
+  imageIds?: string[];
   inStock: boolean;
   category?: Category;
 }
@@ -81,7 +82,7 @@ export interface DirectUploadInput {
 export interface DirectUploadResponse {
   directUploadUrl: string;
   signedBlobId: string;
-  uploadHeaders: Record<string, string>;
+  uploadHeaders: string | Record<string, string>;
 }
 
 export interface UploadProgress {

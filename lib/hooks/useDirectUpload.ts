@@ -17,7 +17,10 @@ interface UploadFileResult {
  */
 export const useDirectUpload = (options?: UseDirectUploadOptions) => {
   const [createDirectUpload, { loading, error }] = useMutation<{
-    createDirectUpload: DirectUploadResponse & { errors?: string[] };
+    createDirectUpload: {
+      directUpload?: DirectUploadResponse;
+      errors?: string[];
+    };
   }>(CREATE_DIRECT_UPLOAD);
 
   const uploadFile = async (file: File): Promise<UploadFileResult> => {
@@ -41,19 +44,34 @@ export const useDirectUpload = (options?: UseDirectUploadOptions) => {
         throw new Error('Failed to get upload URL');
       }
 
-      const { directUploadUrl, signedBlobId, uploadHeaders, errors } =
-        data.createDirectUpload;
+      const { directUpload, errors } = data.createDirectUpload;
 
       if (errors && errors.length > 0) {
         throw new Error(errors.join(', '));
       }
 
+      if (!directUpload) {
+        throw new Error('Invalid response from server');
+      }
+
+      const { directUploadUrl, signedBlobId, uploadHeaders } = directUpload;
+
       if (!directUploadUrl || !signedBlobId) {
         throw new Error('Invalid response from server');
       }
 
+      // Parse uploadHeaders if it's a JSON string
+      let parsedHeaders: Record<string, string> = {};
+      if (uploadHeaders) {
+        if (typeof uploadHeaders === 'string') {
+          parsedHeaders = JSON.parse(uploadHeaders);
+        } else {
+          parsedHeaders = uploadHeaders as Record<string, string>;
+        }
+      }
+
       // Step 3: PUT upload to signed URL with progress tracking
-      await uploadToSignedUrl(file, directUploadUrl, uploadHeaders || {}, options?.onProgress);
+      await uploadToSignedUrl(file, directUploadUrl, parsedHeaders, options?.onProgress);
 
       return { signedBlobId };
     } catch (err) {
