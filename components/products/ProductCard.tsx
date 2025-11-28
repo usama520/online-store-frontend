@@ -1,17 +1,17 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { Product } from '@/lib/types';
-import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
-import { formatPrice } from '@/lib/utils';
+import Link from "next/link";
+import Image from "next/image";
+import { Product } from "@/lib/types";
+import { useStoreSettingsStore } from "@/lib/zustand/storeSettingsStore";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const imageUrl = product.images[0] || '/placeholder-product.png';
+  const imageUrl = product.images[0] || "/placeholder-product.png";
   const { settings } = useStoreSettingsStore();
-  const currencySymbol = settings?.currencySymbol || 'Rs.';
+  const currencySymbol = settings?.currencySymbol || "Rs.";
 
   return (
     <Link href={`/products/${product.id}`}>
@@ -23,6 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               alt={product.name}
               fill
               className="object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
             />
           )}
           {!product.inStock && (
@@ -59,4 +60,3 @@ export default function ProductCard({ product }: ProductCardProps) {
     </Link>
   );
 }
-

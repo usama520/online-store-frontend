@@ -1,17 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/lib/zustand/cartStore';
-import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
-import { formatPrice } from '@/lib/utils';
-import Navbar from '@/components/ui/Navbar';
-import Image from 'next/image';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/lib/zustand/cartStore";
+import { useStoreSettingsStore } from "@/lib/zustand/storeSettingsStore";
+import { formatPrice } from "@/lib/utils";
+import Navbar from "@/components/ui/Navbar";
+import Image from "next/image";
 
 export default function CartPage() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-  const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, clearCart } =
+    useCartStore();
   const { settings } = useStoreSettingsStore();
 
   useEffect(() => {
@@ -33,17 +34,21 @@ export default function CartPage() {
 
   // Calculate values after mount check
   const total = getTotalPrice();
-  const currencySymbol = settings?.currencySymbol || 'Rs.';
+  const currencySymbol = settings?.currencySymbol || "Rs.";
 
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">Your Cart is Empty</h1>
-          <p className="text-gray-600 mb-8">Add some products to get started!</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">
+            Your Cart is Empty
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Add some products to get started!
+          </p>
           <button
-            onClick={() => router.push('/products')}
+            onClick={() => router.push("/products")}
             className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
             Continue Shopping
@@ -77,6 +82,7 @@ export default function CartPage() {
                         alt={item.name}
                         fill
                         className="object-cover"
+                        sizes="96px"
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-400 text-sm">
@@ -88,21 +94,29 @@ export default function CartPage() {
                   {/* Details */}
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                    <p className="text-blue-600 font-bold">{formatPrice(item.price, currencySymbol)}</p>
+                    <p className="text-blue-600 font-bold">
+                      {formatPrice(item.price, currencySymbol)}
+                    </p>
                   </div>
 
                   {/* Quantity */}
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity - 1)
+                      }
                       className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                       disabled={item.quantity <= 1}
                     >
                       -
                     </button>
-                    <span className="w-12 text-center font-medium text-gray-900">{item.quantity}</span>
+                    <span className="w-12 text-center font-medium text-gray-900">
+                      {item.quantity}
+                    </span>
                     <button
-                      onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity + 1)
+                      }
                       className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                       disabled={item.quantity >= item.stockQuantity}
                     >
@@ -120,8 +134,18 @@ export default function CartPage() {
                     onClick={() => removeItem(item.productId)}
                     className="text-red-600 hover:text-red-700 p-2"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -141,7 +165,9 @@ export default function CartPage() {
           {/* Order Summary */}
           <div>
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                Order Summary
+              </h2>
 
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
@@ -159,14 +185,14 @@ export default function CartPage() {
               </div>
 
               <button
-                onClick={() => router.push('/checkout')}
+                onClick={() => router.push("/checkout")}
                 className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-3"
               >
                 Proceed to Checkout
               </button>
 
               <button
-                onClick={() => router.push('/products')}
+                onClick={() => router.push("/products")}
                 className="w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
               >
                 Continue Shopping
@@ -178,4 +204,3 @@ export default function CartPage() {
     </div>
   );
 }
-

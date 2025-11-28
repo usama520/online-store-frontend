@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useCartStore } from '@/lib/zustand/cartStore';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useCartStore } from "@/lib/zustand/cartStore";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function Navbar() {
   const { getTotalItems } = useCartStore();
-  const { isAuthenticated, user, isAdmin, logout } = useAuth();
+  const { isAuthenticated, user, isAdmin, logout, hasHydrated } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -22,27 +22,36 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-2xl font-bold text-blue-600">
-              My Store
+              {process.env.NEXT_PUBLIC_STORE_NAME || "My Store"}
             </Link>
-            <Link href="/products" className="text-gray-700 hover:text-blue-600">
+            <Link
+              href="/products"
+              className="text-gray-700 hover:text-blue-600"
+            >
               Products
             </Link>
           </div>
 
           <div className="flex items-center space-x-6">
-            {isAuthenticated && (
-              <Link href="/account" className="text-gray-700 hover:text-blue-600">
+            {hasHydrated && isAuthenticated && (
+              <Link
+                href="/account"
+                className="text-gray-700 hover:text-blue-600"
+              >
                 {user?.email}
               </Link>
             )}
 
-            {isAdmin && (
+            {hasHydrated && isAdmin && (
               <Link href="/admin" className="text-gray-700 hover:text-blue-600">
                 Admin
               </Link>
             )}
 
-            <Link href="/cart" className="text-gray-700 hover:text-blue-600 relative">
+            <Link
+              href="/cart"
+              className="text-gray-700 hover:text-blue-600 relative"
+            >
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -63,22 +72,35 @@ export default function Navbar() {
               )}
             </Link>
 
-            {isAuthenticated ? (
-              <button
-                onClick={logout}
-                className="text-gray-700 hover:text-blue-600"
-              >
-                Logout
-              </button>
+            {hasHydrated ? (
+              isAuthenticated ? (
+                <button
+                  onClick={logout}
+                  className="text-gray-700 hover:text-blue-600"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-gray-700 hover:text-blue-600"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )
             ) : (
-              <>
-                <Link href="/login" className="text-gray-700 hover:text-blue-600">
-                  Login
-                </Link>
-                <Link href="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                  Sign Up
-                </Link>
-              </>
+              <div
+                className="w-20 h-6 rounded bg-gray-200 animate-pulse"
+                aria-hidden="true"
+              />
             )}
           </div>
         </div>
@@ -86,4 +108,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

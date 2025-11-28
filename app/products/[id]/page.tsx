@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useProduct } from '@/lib/hooks/useProducts';
-import { useCartStore } from '@/lib/zustand/cartStore';
-import { useStoreSettingsStore } from '@/lib/zustand/storeSettingsStore';
-import { useToast } from '@/lib/hooks/useToast';
-import { formatPrice } from '@/lib/utils';
-import Navbar from '@/components/ui/Navbar';
-import Image from 'next/image';
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useProduct } from "@/lib/hooks/useProducts";
+import { useCartStore } from "@/lib/zustand/cartStore";
+import { useStoreSettingsStore } from "@/lib/zustand/storeSettingsStore";
+import { useToast } from "@/lib/hooks/useToast";
+import { formatPrice } from "@/lib/utils";
+import Navbar from "@/components/ui/Navbar";
+import Image from "next/image";
+import ImageLightbox from "@/components/products/ImageLightbox";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -21,7 +22,8 @@ export default function ProductDetailPage() {
   const { showSuccess } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const currencySymbol = settings?.currencySymbol || 'Rs.';
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const currencySymbol = settings?.currencySymbol || "Rs.";
 
   if (loading) {
     return (
@@ -40,7 +42,9 @@ export default function ProductDetailPage() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-2xl font-bold text-gray-800">Product not found</h1>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Product not found
+          </h1>
         </div>
       </div>
     );
@@ -55,7 +59,7 @@ export default function ProductDetailPage() {
       image: product.images[0],
       stockQuantity: product.stockQuantity,
     });
-    showSuccess('Item added to cart');
+    showSuccess("Item added to cart");
   };
 
   const handleBuyNow = () => {
@@ -67,7 +71,7 @@ export default function ProductDetailPage() {
       image: product.images[0],
       stockQuantity: product.stockQuantity,
     });
-    router.push('/checkout');
+    router.push("/checkout");
   };
 
   return (
@@ -78,32 +82,51 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
           <div>
-            <div className="relative h-96 bg-gray-200 rounded-lg overflow-hidden mb-4">
+            <button
+              type="button"
+              onClick={() => setIsLightboxOpen(true)}
+              className="relative h-96 bg-gray-200 rounded-lg overflow-hidden mb-4 w-full group"
+            >
               {product.images[selectedImage] ? (
-                <Image
-                  src={product.images[selectedImage]}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
+                <>
+                  <Image
+                    src={product.images[selectedImage]}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-end justify-end p-3 pointer-events-none">
+                    <span className="inline-flex items-center rounded-full bg-black/60 text-white text-xs px-3 py-1">
+                      Click to preview
+                    </span>
+                  </div>
+                </>
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-400">
                   No image available
                 </div>
               )}
-            </div>
+            </button>
 
             {product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
+                    type="button"
                     onClick={() => setSelectedImage(idx)}
                     className={`relative h-20 rounded-lg overflow-hidden ${
-                      selectedImage === idx ? 'ring-2 ring-blue-600' : ''
+                      selectedImage === idx ? "ring-2 ring-blue-600" : ""
                     }`}
                   >
-                    <Image src={img} alt={`${product.name} ${idx + 1}`} fill className="object-cover" />
+                    <Image
+                      src={img}
+                      alt={`${product.name} ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="80px"
+                    />
                   </button>
                 ))}
               </div>
@@ -112,10 +135,14 @@ export default function ProductDetailPage() {
 
           {/* Product Info */}
           <div>
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">{product.name}</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              {product.name}
+            </h1>
 
             {product.category && (
-              <p className="text-sm text-gray-500 mb-4">Category: {product.category.name}</p>
+              <p className="text-sm text-gray-500 mb-4">
+                Category: {product.category.name}
+              </p>
             )}
 
             <div className="text-4xl font-bold text-blue-600 mb-6">
@@ -131,11 +158,14 @@ export default function ProductDetailPage() {
 
             <div className="mb-6">
               <p className="text-gray-600">
-                <span className="font-semibold">SKU:</span> {product.sku || 'N/A'}
+                <span className="font-semibold">SKU:</span>{" "}
+                {product.sku || "N/A"}
               </p>
               <p className="text-gray-600">
-                <span className="font-semibold">Stock:</span>{' '}
-                {product.inStock ? `${product.stockQuantity} available` : 'Out of stock'}
+                <span className="font-semibold">Stock:</span>{" "}
+                {product.inStock
+                  ? `${product.stockQuantity} available`
+                  : "Out of stock"}
               </p>
             </div>
 
@@ -150,7 +180,17 @@ export default function ProductDetailPage() {
                     min="1"
                     max={product.stockQuantity}
                     value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, Math.min(product.stockQuantity, parseInt(e.target.value) || 1)))}
+                    onChange={(e) =>
+                      setQuantity(
+                        Math.max(
+                          1,
+                          Math.min(
+                            product.stockQuantity,
+                            parseInt(e.target.value) || 1
+                          )
+                        )
+                      )
+                    }
                     className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900"
                   />
                 </div>
@@ -180,7 +220,13 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+      <ImageLightbox
+        images={product.images}
+        currentIndex={selectedImage}
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        onChangeIndex={setSelectedImage}
+      />
     </div>
   );
 }
-

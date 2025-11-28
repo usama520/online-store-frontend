@@ -4,7 +4,7 @@ import { useAuthStore } from '../zustand/authStore';
 import { useRouter } from 'next/navigation';
 
 export const useAuth = () => {
-  const { setAuth, logout, isAuthenticated, user, isAdmin } = useAuthStore();
+  const { setAuth, logout, isAuthenticated, user, isAdmin, _hasHydrated } = useAuthStore();
   const router = useRouter();
 
   const [loginUserMutation] = useMutation(LOGIN_USER);
@@ -70,5 +70,6 @@ export const useAuth = () => {
     isAuthenticated: isAuthenticated(),
     user,
     isAdmin,
+    hasHydrated: _hasHydrated,
   };
 };
