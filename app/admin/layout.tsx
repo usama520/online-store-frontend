@@ -14,7 +14,12 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const { isAdmin, isAuthenticated } = useAuth();
-  const { _hasHydrated } = useAuthStore();
+  const { _hasHydrated, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/admin/login');
+  };
 
   // Skip auth check for login page
   const isLoginPage = pathname === '/admin/login';
@@ -69,6 +74,12 @@ export default function AdminLayout({
                 Products
               </Link>
               <Link
+                href="/admin/categories"
+                className="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors"
+              >
+                Categories
+              </Link>
+              <Link
                 href="/admin/orders"
                 className="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors"
               >
@@ -86,6 +97,12 @@ export default function AdminLayout({
               >
                 Back to Store
               </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left block px-4 py-2 text-gray-300 hover:bg-red-600 hover:text-white rounded transition-colors mt-4"
+              >
+                Logout
+              </button>
             </nav>
           </div>
         </aside>

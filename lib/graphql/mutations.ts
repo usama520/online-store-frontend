@@ -155,6 +155,28 @@ export const CREATE_CATEGORY = gql`
   }
 `;
 
+export const UPDATE_CATEGORY = gql`
+  mutation UpdateCategory($id: ID!, $name: String, $description: String) {
+    updateCategory(id: $id, name: $name, description: $description) {
+      category {
+        id
+        name
+        description
+      }
+      errors
+    }
+  }
+`;
+
+export const DELETE_CATEGORY = gql`
+  mutation DeleteCategory($id: ID!) {
+    deleteCategory(id: $id) {
+      success
+      errors
+    }
+  }
+`;
+
 export const CREATE_DIRECT_UPLOAD = gql`
   mutation CreateDirectUpload($input: CreateDirectUploadInput!) {
     createDirectUpload(input: $input) {
