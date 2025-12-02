@@ -27,10 +27,8 @@ export const useCheckout = () => {
     const { data: result } = await createOrderMutation({
       variables: {
         input: {
-          input: {
-            ...data,
-            orderItems,
-          },
+          ...data,
+          orderItems,
         },
       },
     });
