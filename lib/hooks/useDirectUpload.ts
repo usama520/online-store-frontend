@@ -1,7 +1,11 @@
-import { useMutation } from '@apollo/client';
-import { CREATE_DIRECT_UPLOAD } from '../graphql/mutations';
-import { DirectUploadInput, DirectUploadResponse, UploadProgress } from '../types';
-import { generateMD5Checksum } from '../utils/md5';
+import { useMutation } from "@apollo/client";
+import { CREATE_DIRECT_UPLOAD } from "../graphql/mutations";
+import {
+  DirectUploadInput,
+  DirectUploadResponse,
+  UploadProgress,
+} from "../types";
+import { generateMD5Checksum } from "../utils/md5";
 
 interface UseDirectUploadOptions {
   onProgress?: (progress: UploadProgress) => void;
@@ -41,29 +45,29 @@ export const useDirectUpload = (options?: UseDirectUploadOptions) => {
       });
 
       if (!data?.createDirectUpload) {
-        throw new Error('Failed to get upload URL');
+        throw new Error("Failed to get upload URL");
       }
 
       const { directUpload, errors } = data.createDirectUpload;
 
       if (errors && errors.length > 0) {
-        throw new Error(errors.join(', '));
+        throw new Error(errors.join(", "));
       }
 
       if (!directUpload) {
-        throw new Error('Invalid response from server');
+        throw new Error("Invalid response from server");
       }
 
       const { directUploadUrl, signedBlobId, uploadHeaders } = directUpload;
 
       if (!directUploadUrl || !signedBlobId) {
-        throw new Error('Invalid response from server');
+        throw new Error("Invalid response from server");
       }
 
       // Parse uploadHeaders if it's a JSON string
       let parsedHeaders: Record<string, string> = {};
       if (uploadHeaders) {
-        if (typeof uploadHeaders === 'string') {
+        if (typeof uploadHeaders === "string") {
           parsedHeaders = JSON.parse(uploadHeaders);
         } else {
           parsedHeaders = uploadHeaders as Record<string, string>;
@@ -71,14 +75,19 @@ export const useDirectUpload = (options?: UseDirectUploadOptions) => {
       }
 
       // Step 3: PUT upload to signed URL with progress tracking
-      await uploadToSignedUrl(file, directUploadUrl, parsedHeaders, options?.onProgress);
+      await uploadToSignedUrl(
+        file,
+        directUploadUrl,
+        parsedHeaders,
+        options?.onProgress,
+      );
 
       return { signedBlobId };
     } catch (err) {
       if (err instanceof Error) {
         throw err;
       }
-      throw new Error('Upload failed');
+      throw new Error("Upload failed");
     }
   };
 
@@ -96,12 +105,12 @@ async function uploadToSignedUrl(
   file: File,
   signedUrl: string,
   headers: Record<string, string>,
-  onProgress?: (progress: UploadProgress) => void
+  onProgress?: (progress: UploadProgress) => void,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
 
-    xhr.upload.addEventListener('progress', (e) => {
+    xhr.upload.addEventListener("progress", (e) => {
       if (e.lengthComputable && onProgress) {
         const progress: UploadProgress = {
           loaded: e.loaded,
@@ -112,7 +121,7 @@ async function uploadToSignedUrl(
       }
     });
 
-    xhr.addEventListener('load', () => {
+    xhr.addEventListener("load", () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve();
       } else {
@@ -120,15 +129,15 @@ async function uploadToSignedUrl(
       }
     });
 
-    xhr.addEventListener('error', () => {
-      reject(new Error('Network error during upload'));
+    xhr.addEventListener("error", () => {
+      reject(new Error("Network error during upload"));
     });
 
-    xhr.addEventListener('abort', () => {
-      reject(new Error('Upload aborted'));
+    xhr.addEventListener("abort", () => {
+      reject(new Error("Upload aborted"));
     });
 
-    xhr.open('PUT', signedUrl);
+    xhr.open("PUT", signedUrl);
 
     // Set headers from server response
     Object.entries(headers).forEach(([key, value]) => {
@@ -136,11 +145,10 @@ async function uploadToSignedUrl(
     });
 
     // Set content type if not provided in headers
-    if (!headers['Content-Type'] && !headers['content-type']) {
-      xhr.setRequestHeader('Content-Type', file.type);
+    if (!headers["Content-Type"] && !headers["content-type"]) {
+      xhr.setRequestHeader("Content-Type", file.type);
     }
 
     xhr.send(file);
   });
 }
-

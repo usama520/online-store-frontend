@@ -37,7 +37,7 @@ export default function SignupPage() {
       await registerUser(
         formData.email,
         formData.password,
-        formData.passwordConfirmation
+        formData.passwordConfirmation,
       );
       router.push("/");
     } catch (err) {

@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/client';
-import { GET_PRODUCTS, GET_PRODUCT } from '../graphql/queries';
-import { Product } from '../types';
+import { useQuery } from "@apollo/client";
+import { GET_PRODUCTS, GET_PRODUCT } from "../graphql/queries";
+import { Product } from "../types";
 
 export const useProducts = (categoryId?: string, search?: string) => {
   const { data, loading, error, refetch } = useQuery(GET_PRODUCTS, {

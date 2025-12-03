@@ -4,7 +4,6 @@
 
 - Use the **App Router** (`app/`) for all new pages.
 - Use **Server Components by default**.
-
   - Only use **Client Components** when absolutely required (state, effects, event listeners, browser APIs).
 
 - Keep components **pure** and side-effect-free unless they are Client Components.
@@ -37,13 +36,11 @@
 
 - **Prefer Server Components** + `fetch()` with caching.
 - If you need real-time updates or client state → use a **Client Component** and:
-
   - SWR
   - React Query
   - Apollo Client (GraphQL)
 
 - Use `fetch()` with:
-
   - **cache: 'force-cache'** for static data
   - **cache: 'no-store'** for dynamic, non-cacheable data
   - **revalidate: <seconds>** for ISR
@@ -60,7 +57,6 @@
   ```
 
 - Always validate input at the API boundary using:
-
   - Zod
   - Yup
   - Valibot
@@ -73,7 +69,6 @@
 
 - **Avoid global state** unless absolutely required.
 - For global state use:
-
   - Zustand
   - Jotai
   - Context API (only if small-scale)
@@ -85,7 +80,6 @@
 ## **6. Client Component Rules**
 
 - A component must be a Client Component only if:
-
   - It uses `useState` / `useEffect` / `useRef`
   - It handles browser events (`onClick`, `onChange`)
   - It interacts with `window`, `localStorage`, `document`
@@ -100,7 +94,6 @@
 - Can safely fetch data (uses backend credentials, tokens, secrets).
 - Can use async/await directly in the component body.
 - Must avoid:
-
   - Browser APIs
   - `useState`, `useEffect`, `useRef`
   - Event handlers
@@ -110,7 +103,6 @@
 ## **8. Authentication & Session Handling**
 
 - Prefer **NextAuth** or **custom JWT session** with:
-
   - HttpOnly cookies
   - Secure cookies in production
 
@@ -121,7 +113,6 @@
 ## **9. Styling Rules**
 
 - Use:
-
   - Tailwind CSS
   - ShadCN/UI components
 
@@ -143,7 +134,6 @@
 ## **11. Error Handling**
 
 - Use Next.js error boundaries:
-
   - `error.tsx` for route-level errors
   - `not-found.tsx` for 404
 
@@ -175,7 +165,6 @@
 ## **14. Logging & Monitoring**
 
 - Use:
-
   - Vercel Observability (if hosting on Vercel)
   - Sentry or Logtail for error reporting
 

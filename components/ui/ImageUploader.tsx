@@ -99,7 +99,7 @@ export default function ImageUploader({
         });
       }
     },
-    [multiple, maxSize, files.length, showError]
+    [multiple, maxSize, files.length, showError],
   );
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -179,7 +179,7 @@ export default function ImageUploader({
           // Update file with signed ID
           setFiles((prev) => {
             const updated = prev.map((f, idx) =>
-              idx === i ? { ...f, signedId: result.signedBlobId } : f
+              idx === i ? { ...f, signedId: result.signedBlobId } : f,
             );
             filesRef.current = updated;
             return updated;
@@ -192,7 +192,7 @@ export default function ImageUploader({
           // Update file with error
           setFiles((prev) => {
             const updated = prev.map((f, idx) =>
-              idx === i ? { ...f, error: errorMessage } : f
+              idx === i ? { ...f, error: errorMessage } : f,
             );
             filesRef.current = updated;
             return updated;
@@ -210,7 +210,7 @@ export default function ImageUploader({
           showSuccess(
             `Successfully uploaded ${signedIds.length} file${
               signedIds.length > 1 ? "s" : ""
-            }`
+            }`,
           );
         }
       } else {
@@ -433,10 +433,10 @@ export default function ImageUploader({
               {isUploading
                 ? "Uploading..."
                 : files.every((f) => f.signedId)
-                ? "All Uploaded"
-                : `Upload ${files.filter((f) => !f.signedId).length} File${
-                    files.filter((f) => !f.signedId).length !== 1 ? "s" : ""
-                  }`}
+                  ? "All Uploaded"
+                  : `Upload ${files.filter((f) => !f.signedId).length} File${
+                      files.filter((f) => !f.signedId).length !== 1 ? "s" : ""
+                    }`}
             </button>
           </div>
         </div>

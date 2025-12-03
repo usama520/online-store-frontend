@@ -1,5 +1,5 @@
-import { Product } from '@/lib/types';
-import ProductCard from './ProductCard';
+import { Product } from "@/lib/types";
+import ProductCard from "./ProductCard";
 
 interface ProductGridProps {
   products: Product[];
@@ -22,4 +22,3 @@ export default function ProductGrid({ products }: ProductGridProps) {
     </div>
   );
 }
-

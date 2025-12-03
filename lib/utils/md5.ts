@@ -16,7 +16,7 @@ import SparkMD5 from "spark-md5";
  */
 export async function generateMD5Checksum(
   file: File,
-  chunkSize: number = 1024 * 1024
+  chunkSize: number = 1024 * 1024,
 ): Promise<string> {
   const spark = new SparkMD5.ArrayBuffer();
   let offset = 0;
@@ -33,4 +33,3 @@ export async function generateMD5Checksum(
   const binaryDigest = spark.end(true);
   return btoa(binaryDigest);
 }
-

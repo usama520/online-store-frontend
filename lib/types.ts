@@ -90,4 +90,3 @@ export interface UploadProgress {
   total: number;
   percentage: number;
 }
-

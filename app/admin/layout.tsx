@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useAuthStore } from '@/lib/zustand/authStore';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { useAuthStore } from "@/lib/zustand/authStore";
+import Link from "next/link";
 
 export default function AdminLayout({
   children,
@@ -18,11 +18,11 @@ export default function AdminLayout({
 
   const handleLogout = () => {
     logout();
-    router.push('/admin/login');
+    router.push("/admin/login");
   };
 
   // Skip auth check for login page
-  const isLoginPage = pathname === '/admin/login';
+  const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
     // Wait for hydration before checking auth
@@ -30,7 +30,7 @@ export default function AdminLayout({
 
     // Only redirect if not on login page
     if (!isLoginPage && (!isAuthenticated || !isAdmin)) {
-      router.push('/admin/login');
+      router.push("/admin/login");
     }
   }, [isAuthenticated, isAdmin, router, isLoginPage, _hasHydrated]);
 
@@ -108,11 +108,8 @@ export default function AdminLayout({
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
-          {children}
-        </main>
+        <main className="flex-1 p-8">{children}</main>
       </div>
     </div>
   );
 }
-

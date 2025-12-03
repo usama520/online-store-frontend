@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
-import { GET_CATEGORIES } from '@/lib/graphql/queries';
+import { useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_CATEGORIES } from "@/lib/graphql/queries";
 import {
   CREATE_CATEGORY,
   UPDATE_CATEGORY,
   DELETE_CATEGORY,
-} from '@/lib/graphql/mutations';
-import { useToast } from '@/lib/hooks/useToast';
+} from "@/lib/graphql/mutations";
+import { useToast } from "@/lib/hooks/useToast";
 
 interface Category {
   id: string;
@@ -21,8 +21,8 @@ export default function CategoriesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
   });
 
   const { data, loading, refetch } = useQuery(GET_CATEGORIES);
@@ -37,11 +37,11 @@ export default function CategoriesPage() {
       setEditingCategory(category);
       setFormData({
         name: category.name,
-        description: category.description || '',
+        description: category.description || "",
       });
     } else {
       setEditingCategory(null);
-      setFormData({ name: '', description: '' });
+      setFormData({ name: "", description: "" });
     }
     setIsModalOpen(true);
   };
@@ -49,7 +49,7 @@ export default function CategoriesPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCategory(null);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: "", description: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,9 +67,9 @@ export default function CategoriesPage() {
         });
 
         if (data?.updateCategory?.errors?.length > 0) {
-          showToast(data.updateCategory.errors.join(', '), 'error');
+          showToast(data.updateCategory.errors.join(", "), "error");
         } else {
-          showToast('Category updated successfully', 'success');
+          showToast("Category updated successfully", "success");
           handleCloseModal();
           refetch();
         }
@@ -83,21 +83,25 @@ export default function CategoriesPage() {
         });
 
         if (data?.createCategory?.errors?.length > 0) {
-          showToast(data.createCategory.errors.join(', '), 'error');
+          showToast(data.createCategory.errors.join(", "), "error");
         } else {
-          showToast('Category created successfully', 'success');
+          showToast("Category created successfully", "success");
           handleCloseModal();
           refetch();
         }
       }
     } catch (error) {
-      showToast('An error occurred. Please try again.', 'error');
-      console.error('Error saving category:', error);
+      showToast("An error occurred. Please try again.", "error");
+      console.error("Error saving category:", error);
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"? Products in this category will remain but will be uncategorized.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete "${name}"? Products in this category will remain but will be uncategorized.`,
+      )
+    ) {
       return;
     }
 
@@ -107,14 +111,14 @@ export default function CategoriesPage() {
       });
 
       if (data?.deleteCategory?.errors?.length > 0) {
-        showToast(data.deleteCategory.errors.join(', '), 'error');
+        showToast(data.deleteCategory.errors.join(", "), "error");
       } else {
-        showToast('Category deleted successfully', 'success');
+        showToast("Category deleted successfully", "success");
         refetch();
       }
     } catch (error) {
-      showToast('An error occurred. Please try again.', 'error');
-      console.error('Error deleting category:', error);
+      showToast("An error occurred. Please try again.", "error");
+      console.error("Error deleting category:", error);
     }
   };
 
@@ -171,7 +175,7 @@ export default function CategoriesPage() {
                     {category.name}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">
-                    {category.description || '-'}
+                    {category.description || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
@@ -200,7 +204,7 @@ export default function CategoriesPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              {editingCategory ? 'Edit Category' : 'Add Category'}
+              {editingCategory ? "Edit Category" : "Add Category"}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
@@ -254,10 +258,10 @@ export default function CategoriesPage() {
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
                   {creating || updating
-                    ? 'Saving...'
+                    ? "Saving..."
                     : editingCategory
-                    ? 'Update'
-                    : 'Create'}
+                      ? "Update"
+                      : "Create"}
                 </button>
               </div>
             </form>

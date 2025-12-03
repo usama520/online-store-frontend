@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useToastContext } from '@/lib/providers/ToastProvider';
-import { ToastContainer } from './Toast';
+import { useEffect, useState } from "react";
+import { useToastContext } from "@/lib/providers/ToastProvider";
+import { ToastContainer } from "./Toast";
 
 export const ToastWrapper = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -18,4 +18,3 @@ export const ToastWrapper = () => {
 
   return <ToastContainer toasts={toasts} onClose={removeToast} />;
 };
-

@@ -1,5 +1,5 @@
-import { DocumentNode, parse } from 'graphql';
-import { apolloClient } from '../graphql/client';
+import { DocumentNode, parse } from "graphql";
+import { apolloClient } from "../graphql/client";
 
 interface GraphQLUploadOptions {
   query: string | DocumentNode;
@@ -10,9 +10,13 @@ interface GraphQLUploadOptions {
  * Wrapper to run GraphQL queries/mutations using Apollo Client.
  * Supports file uploads automatically if variables contain File objects.
  */
-export async function graphqlUpload({ query, variables = {} }: GraphQLUploadOptions) {
+export async function graphqlUpload({
+  query,
+  variables = {},
+}: GraphQLUploadOptions) {
   // Convert string to DocumentNode if needed
-  const mutation: DocumentNode = typeof query === 'string' ? parse(query) : query;
+  const mutation: DocumentNode =
+    typeof query === "string" ? parse(query) : query;
 
   try {
     const result = await apolloClient.mutate({
@@ -26,7 +30,7 @@ export async function graphqlUpload({ query, variables = {} }: GraphQLUploadOpti
 
     return result.data;
   } catch (err: any) {
-    console.error('GraphQL Upload Error:', err);
+    console.error("GraphQL Upload Error:", err);
     throw err;
   }
 }

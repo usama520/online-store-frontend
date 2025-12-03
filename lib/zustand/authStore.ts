@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface User {
   id: string;
@@ -32,15 +32,15 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       setAuth: (user, token, isAdmin = false) => {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('token', token);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("token", token);
         }
         set({ user, token, isAdmin });
       },
 
       logout: () => {
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('token');
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("token");
         }
         set({ user: null, token: null, isAdmin: false });
       },
@@ -51,10 +51,10 @@ export const useAuthStore = create<AuthStore>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );

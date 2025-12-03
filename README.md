@@ -5,6 +5,7 @@ A modern e-commerce platform built with Next.js 14, TypeScript, Tailwind CSS, an
 ## Features
 
 ### Customer Features
+
 - 🏠 **Home Page** - Featured products and search functionality
 - 🛍️ **Product Catalog** - Browse products with search and category filters
 - 📦 **Product Details** - View product information, images, and stock availability
@@ -14,12 +15,14 @@ A modern e-commerce platform built with Next.js 14, TypeScript, Tailwind CSS, an
 - 👤 **User Accounts** (Optional) - Register and login to track orders
 
 ### Admin Features
+
 - 📊 **Dashboard** - Overview of orders, revenue, and inventory alerts
 - ✏️ **Product Management** - Create, update, and delete products
 - 📋 **Order Management** - View orders, update status, confirm payments
 - ⚙️ **Store Settings** - Customize store name, colors, and bank account details
 
 ### Payment Methods
+
 - 💵 **Cash on Delivery (COD)** - Pay when you receive your order
 - 🏦 **Bank Transfer** - Transfer to store's bank account with details displayed
 
@@ -34,7 +37,7 @@ A modern e-commerce platform built with Next.js 14, TypeScript, Tailwind CSS, an
 
 ## Project Structure
 
-```
+````
 online-store-frontend/
 ├── app/
 │   ├── page.tsx                  # Home page
@@ -88,15 +91,17 @@ online-store-frontend/
 1. Install dependencies:
 ```bash
 npm install
-```
+````
 
 2. Create `.env.local` file:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000/graphql
 NEXT_PUBLIC_STORE_NAME=My Online Store
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -121,12 +126,14 @@ npm run dev
 ### State Management (Zustand)
 
 **Cart Store** (`lib/zustand/cartStore.ts`):
+
 - Add/remove items
 - Update quantities
 - Calculate totals
 - Persist to localStorage
 
 **Auth Store** (`lib/zustand/authStore.ts`):
+
 - User/admin authentication
 - JWT token management
 - Login/logout functionality
@@ -134,6 +141,7 @@ npm run dev
 ### GraphQL Integration
 
 **Queries** (`lib/graphql/queries.ts`):
+
 - Get products (with search and category filter)
 - Get single product
 - Get categories
@@ -141,6 +149,7 @@ npm run dev
 - Get store settings
 
 **Mutations** (`lib/graphql/mutations.ts`):
+
 - Create order
 - User login/register
 - Admin login
@@ -167,6 +176,7 @@ The platform is designed to be easily customizable:
 ## Payment Flow
 
 ### Cash on Delivery (COD)
+
 1. Customer places order
 2. Order status: "pending"
 3. Payment recorded as "cash_on_delivery"
@@ -174,6 +184,7 @@ The platform is designed to be easily customizable:
 5. Payment confirmed upon delivery
 
 ### Bank Transfer
+
 1. Customer places order
 2. Bank account details displayed
 3. Customer transfers money

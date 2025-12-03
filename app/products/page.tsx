@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useProducts } from '@/lib/hooks/useProducts';
-import { useQuery } from '@apollo/client';
-import { GET_CATEGORIES } from '@/lib/graphql/queries';
-import ProductGrid from '@/components/products/ProductGrid';
-import Navbar from '@/components/ui/Navbar';
-import { Category } from '@/lib/types';
+import { useState } from "react";
+import { useProducts } from "@/lib/hooks/useProducts";
+import { useQuery } from "@apollo/client";
+import { GET_CATEGORIES } from "@/lib/graphql/queries";
+import ProductGrid from "@/components/products/ProductGrid";
+import Navbar from "@/components/ui/Navbar";
+import { Category } from "@/lib/types";
 
 export default function ProductsPage() {
-  const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
-  const { products, loading } = useProducts(selectedCategory || undefined, search || undefined);
+  const { products, loading } = useProducts(
+    selectedCategory || undefined,
+    search || undefined,
+  );
   const { data: categoriesData } = useQuery(GET_CATEGORIES);
   const categories = (categoriesData?.categories || []) as Category[];
 
@@ -66,4 +69,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-

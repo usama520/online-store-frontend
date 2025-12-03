@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface CartItem {
   productId: string;
@@ -27,14 +27,22 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (item) =>
         set((state) => {
-          const existingItem = state.items.find((i) => i.productId === item.productId);
+          const existingItem = state.items.find(
+            (i) => i.productId === item.productId,
+          );
 
           if (existingItem) {
             return {
               items: state.items.map((i) =>
                 i.productId === item.productId
-                  ? { ...i, quantity: Math.min(i.quantity + item.quantity, item.stockQuantity) }
-                  : i
+                  ? {
+                      ...i,
+                      quantity: Math.min(
+                        i.quantity + item.quantity,
+                        item.stockQuantity,
+                      ),
+                    }
+                  : i,
               ),
             };
           }
@@ -51,8 +59,11 @@ export const useCartStore = create<CartStore>()(
         set((state) => ({
           items: state.items.map((i) =>
             i.productId === productId
-              ? { ...i, quantity: Math.min(Math.max(1, quantity), i.stockQuantity) }
-              : i
+              ? {
+                  ...i,
+                  quantity: Math.min(Math.max(1, quantity), i.stockQuantity),
+                }
+              : i,
           ),
         })),
 
@@ -65,12 +76,14 @@ export const useCartStore = create<CartStore>()(
 
       getTotalPrice: () => {
         const state = get();
-        return state.items.reduce((total, item) => total + item.price * item.quantity, 0);
+        return state.items.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0,
+        );
       },
     }),
     {
-      name: 'cart-storage',
-    }
-  )
+      name: "cart-storage",
+    },
+  ),
 );
-

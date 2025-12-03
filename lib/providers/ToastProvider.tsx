@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback } from "react";
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = "success" | "error" | "info";
 
 export interface Toast {
   id: string;
@@ -21,12 +21,14 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const useToastContext = () => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToastContext must be used within ToastProvider');
+    throw new Error("useToastContext must be used within ToastProvider");
   }
   return context;
 };
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const removeToast = useCallback((id: string) => {
@@ -51,4 +53,3 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     </ToastContext.Provider>
   );
 };
-

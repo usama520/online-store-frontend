@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS = gql`
   query GetProducts($categoryId: ID, $search: String) {
@@ -133,4 +133,3 @@ export const GET_ORDERS = gql`
     }
   }
 `;
-

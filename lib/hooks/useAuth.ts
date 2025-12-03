@@ -1,10 +1,11 @@
-import { useMutation } from '@apollo/client';
-import { LOGIN_USER, REGISTER_USER, LOGIN_ADMIN } from '../graphql/mutations';
-import { useAuthStore } from '../zustand/authStore';
-import { useRouter } from 'next/navigation';
+import { useMutation } from "@apollo/client";
+import { LOGIN_USER, REGISTER_USER, LOGIN_ADMIN } from "../graphql/mutations";
+import { useAuthStore } from "../zustand/authStore";
+import { useRouter } from "next/navigation";
 
 export const useAuth = () => {
-  const { setAuth, logout, isAuthenticated, user, isAdmin, _hasHydrated } = useAuthStore();
+  const { setAuth, logout, isAuthenticated, user, isAdmin, _hasHydrated } =
+    useAuthStore();
   const router = useRouter();
 
   const [loginUserMutation] = useMutation(LOGIN_USER);
@@ -17,26 +18,30 @@ export const useAuth = () => {
     });
 
     if (data.loginUser.errors.length > 0) {
-      throw new Error(data.loginUser.errors.join(', '));
+      throw new Error(data.loginUser.errors.join(", "));
     }
 
     setAuth(data.loginUser.user, data.loginUser.token, false);
     return data.loginUser.user;
   };
 
-  const registerUser = async (email: string, password: string, passwordConfirmation: string) => {
+  const registerUser = async (
+    email: string,
+    password: string,
+    passwordConfirmation: string,
+  ) => {
     const { data } = await registerUserMutation({
       variables: {
         input: {
           email,
           password,
-          passwordConfirmation
-        }
+          passwordConfirmation,
+        },
       },
     });
 
     if (data.registerUser.errors.length > 0) {
-      throw new Error(data.registerUser.errors.join(', '));
+      throw new Error(data.registerUser.errors.join(", "));
     }
 
     setAuth(data.registerUser.user, data.registerUser.token, false);
@@ -49,17 +54,17 @@ export const useAuth = () => {
     });
 
     if (data.loginAdmin.errors.length > 0) {
-      throw new Error(data.loginAdmin.errors.join(', '));
+      throw new Error(data.loginAdmin.errors.join(", "));
     }
 
     setAuth(data.loginAdmin.adminUser, data.loginAdmin.token, true);
-    router.push('/admin');
+    router.push("/admin");
     return data.loginAdmin.adminUser;
   };
 
   const handleLogout = () => {
     logout();
-    router.push('/');
+    router.push("/");
   };
 
   return {

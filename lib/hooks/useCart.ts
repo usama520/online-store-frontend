@@ -1,4 +1,4 @@
-import { useCartStore, CartItem } from '../zustand/cartStore';
+import { useCartStore, CartItem } from "../zustand/cartStore";
 
 interface CheckoutItem {
   productId: string;
@@ -30,9 +30,12 @@ export const useCart = () => {
   };
 
   // Validate if all items are still in stock
-  const validateStock = (): { isValid: boolean; outOfStockItems: CartItem[] } => {
+  const validateStock = (): {
+    isValid: boolean;
+    outOfStockItems: CartItem[];
+  } => {
     const outOfStockItems = items.filter(
-      (item) => !item.stockQuantity || item.quantity > item.stockQuantity
+      (item) => !item.stockQuantity || item.quantity > item.stockQuantity,
     );
 
     return {
@@ -65,4 +68,3 @@ export const useCart = () => {
     getCartItem,
   };
 };
-

@@ -144,14 +144,14 @@ export default function AdminProductsPage() {
           // Update preview with signed ID
           setImagePreviews((prev) =>
             prev.map((p, idx) =>
-              idx === i ? { ...p, signedId: result.signedBlobId } : p
-            )
+              idx === i ? { ...p, signedId: result.signedBlobId } : p,
+            ),
           );
         } catch (error) {
           showError(
             `Failed to upload ${preview.file.name}: ${
               error instanceof Error ? error.message : "Unknown error"
-            }`
+            }`,
           );
           setUploading(false);
           setUploadingImages(false);
@@ -208,7 +208,7 @@ export default function AdminProductsPage() {
       showSuccess(
         editingProduct
           ? "Product updated successfully"
-          : "Product created successfully"
+          : "Product created successfully",
       );
     } catch (error) {
       if (error instanceof ApolloError) {
@@ -216,7 +216,7 @@ export default function AdminProductsPage() {
         showError("Something went wrong");
       } else {
         showError(
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
       }
     } finally {
@@ -238,7 +238,7 @@ export default function AdminProductsPage() {
         showError("Something went wrong");
       } else {
         showError(
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
       }
     }
@@ -556,10 +556,10 @@ export default function AdminProductsPage() {
                   {uploadingImages
                     ? "Uploading images..."
                     : uploading
-                    ? "Saving..."
-                    : editingProduct
-                    ? "Update"
-                    : "Create"}
+                      ? "Saving..."
+                      : editingProduct
+                        ? "Update"
+                        : "Create"}
                 </button>
                 <button
                   type="button"

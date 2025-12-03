@@ -1,6 +1,6 @@
-declare module 'apollo-upload-client' {
-  import { ApolloLink } from '@apollo/client';
-  
+declare module "apollo-upload-client" {
+  import { ApolloLink } from "@apollo/client";
+
   export interface CreateUploadLinkOptions {
     uri?: string;
     fetch?: typeof fetch;
@@ -9,8 +9,8 @@ declare module 'apollo-upload-client' {
     headers?: Record<string, string>;
     includeExtensions?: boolean;
   }
-  
-  export function createUploadLink(options?: CreateUploadLinkOptions): ApolloLink;
+
+  export function createUploadLink(
+    options?: CreateUploadLinkOptions,
+  ): ApolloLink;
 }
-
-

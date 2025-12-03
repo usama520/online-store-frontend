@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import { useQuery } from '@apollo/client';
-import { GET_ORDER, GET_STORE_SETTINGS } from '@/lib/graphql/queries';
-import { formatPrice } from '@/lib/utils';
-import Navbar from '@/components/ui/Navbar';
-import { Order, StoreSettings } from '@/lib/types';
-import Link from 'next/link';
+import { useParams } from "next/navigation";
+import { useQuery } from "@apollo/client";
+import { GET_ORDER, GET_STORE_SETTINGS } from "@/lib/graphql/queries";
+import { formatPrice } from "@/lib/utils";
+import Navbar from "@/components/ui/Navbar";
+import { Order, StoreSettings } from "@/lib/types";
+import Link from "next/link";
 
 export default function OrderSuccessPage() {
   const params = useParams();
@@ -19,7 +19,7 @@ export default function OrderSuccessPage() {
 
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
-  const currencySymbol = storeSettings?.currencySymbol || 'Rs.';
+  const currencySymbol = storeSettings?.currencySymbol || "Rs.";
 
   const order = data?.order as Order | null;
 
@@ -54,17 +54,34 @@ export default function OrderSuccessPage() {
         {/* Success Message */}
         <div className="bg-green-50 border-2 border-green-500 rounded-lg p-8 mb-8 text-center">
           <div className="flex justify-center mb-4">
-            <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-16 h-16 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Order Placed Successfully!</h1>
-          <p className="text-gray-600">Thank you for your order. We&apos;ll send you a confirmation email shortly.</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Order Placed Successfully!
+          </h1>
+          <p className="text-gray-600">
+            Thank you for your order. We&apos;ll send you a confirmation email
+            shortly.
+          </p>
         </div>
 
         {/* Order Details */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Details</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Order Details
+          </h2>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
@@ -79,23 +96,39 @@ export default function OrderSuccessPage() {
             </div>
             <div>
               <p className="text-sm text-gray-600">Status</p>
-              <p className="font-semibold text-blue-600 capitalize">{order.status}</p>
+              <p className="font-semibold text-blue-600 capitalize">
+                {order.status}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Payment Method</p>
               <p className="font-semibold text-gray-800 capitalize">
-                {order.payment?.paymentMethod.replace('_', ' ')}
+                {order.payment?.paymentMethod.replace("_", " ")}
               </p>
             </div>
           </div>
 
           <div className="border-t pt-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Customer Information</h3>
+            <h3 className="font-semibold text-gray-800 mb-2">
+              Customer Information
+            </h3>
             <div className="space-y-1 text-sm text-gray-600">
-              <p><span className="font-medium">Name:</span> {order.customerName}</p>
-              <p><span className="font-medium">Email:</span> {order.customerEmail}</p>
-              <p><span className="font-medium">Phone:</span> {order.customerPhone}</p>
-              <p><span className="font-medium">Address:</span> {order.streetAddress}, {order.city}{order.postalCode ? `, ${order.postalCode}` : ''}</p>
+              <p>
+                <span className="font-medium">Name:</span> {order.customerName}
+              </p>
+              <p>
+                <span className="font-medium">Email:</span>{" "}
+                {order.customerEmail}
+              </p>
+              <p>
+                <span className="font-medium">Phone:</span>{" "}
+                {order.customerPhone}
+              </p>
+              <p>
+                <span className="font-medium">Address:</span>{" "}
+                {order.streetAddress}, {order.city}
+                {order.postalCode ? `, ${order.postalCode}` : ""}
+              </p>
             </div>
           </div>
         </div>
@@ -106,14 +139,25 @@ export default function OrderSuccessPage() {
 
           <div className="space-y-4">
             {order.orderItems.map((item) => (
-              <div key={item.id} className="flex justify-between items-center py-3 border-b last:border-b-0">
+              <div
+                key={item.id}
+                className="flex justify-between items-center py-3 border-b last:border-b-0"
+              >
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-800">{item.product.name}</p>
-                  <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                  <p className="font-semibold text-gray-800">
+                    {item.product.name}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Quantity: {item.quantity}
+                  </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-800">{formatPrice(item.subtotal, currencySymbol)}</p>
-                  <p className="text-sm text-gray-600">{formatPrice(item.price, currencySymbol)} each</p>
+                  <p className="font-semibold text-gray-800">
+                    {formatPrice(item.subtotal, currencySymbol)}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {formatPrice(item.price, currencySymbol)} each
+                  </p>
                 </div>
               </div>
             ))}
@@ -121,7 +165,9 @@ export default function OrderSuccessPage() {
 
           <div className="border-t mt-6 pt-4 flex justify-between items-center">
             <span className="text-xl font-bold text-gray-800">Total</span>
-            <span className="text-2xl font-bold text-blue-600">{formatPrice(order.totalAmount, currencySymbol)}</span>
+            <span className="text-2xl font-bold text-blue-600">
+              {formatPrice(order.totalAmount, currencySymbol)}
+            </span>
           </div>
         </div>
 
@@ -144,4 +190,3 @@ export default function OrderSuccessPage() {
     </div>
   );
 }
-

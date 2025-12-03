@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const CREATE_ORDER = gql`
   mutation CreateOrder($input: CreateOrderInput!) {
@@ -71,7 +71,6 @@ export const CREATE_PRODUCT = gql`
     }
   }
 `;
-
 
 export const UPDATE_PRODUCT = gql`
   mutation UpdateProduct($input: ProductUpdateInput!) {
@@ -189,4 +188,3 @@ export const CREATE_DIRECT_UPLOAD = gql`
     }
   }
 `;
-

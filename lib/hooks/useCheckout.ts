@@ -1,7 +1,7 @@
-import { useMutation } from '@apollo/client';
-import { CREATE_ORDER } from '../graphql/mutations';
-import { useCartStore } from '../zustand/cartStore';
-import { useRouter } from 'next/navigation';
+import { useMutation } from "@apollo/client";
+import { CREATE_ORDER } from "../graphql/mutations";
+import { useCartStore } from "../zustand/cartStore";
+import { useRouter } from "next/navigation";
 
 interface CheckoutData {
   customerName: string;
@@ -34,7 +34,7 @@ export const useCheckout = () => {
     });
 
     if (result.createOrder.errors.length > 0) {
-      throw new Error(result.createOrder.errors.join(', '));
+      throw new Error(result.createOrder.errors.join(", "));
     }
 
     const order = result.createOrder.order;
