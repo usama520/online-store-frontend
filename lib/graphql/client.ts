@@ -29,6 +29,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
       // Handle admin authorization error - clear tokens and redirect to login
       if (message.startsWith("You must be an admin to")) {
+        console.log('Admin authorization error detected:', message);
         if (typeof window !== "undefined") {
           // Clear all auth-related storage
           localStorage.removeItem("token");
