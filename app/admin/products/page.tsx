@@ -16,6 +16,9 @@ import { formatPrice } from "@/lib/utils";
 import { Product, Category, StoreSettings } from "@/lib/types";
 import { useToast } from "@/lib/hooks/useToast";
 import { useDirectUpload } from "@/lib/hooks/useDirectUpload";
+import AdminLayout from "@/components/admin/AdminLayout";
+import AdminTable from "@/components/admin/AdminTable";
+import { Edit2, Trash2, Plus, X } from "lucide-react";
 
 export default function AdminProductsPage() {
   const { data, refetch } = useQuery(GET_PRODUCTS);
@@ -144,14 +147,14 @@ export default function AdminProductsPage() {
           // Update preview with signed ID
           setImagePreviews((prev) =>
             prev.map((p, idx) =>
-              idx === i ? { ...p, signedId: result.signedBlobId } : p,
-            ),
+              idx === i ? { ...p, signedId: result.signedBlobId } : p
+            )
           );
         } catch (error) {
           showError(
             `Failed to upload ${preview.file.name}: ${
               error instanceof Error ? error.message : "Unknown error"
-            }`,
+            }`
           );
           setUploading(false);
           setUploadingImages(false);
@@ -208,7 +211,7 @@ export default function AdminProductsPage() {
       showSuccess(
         editingProduct
           ? "Product updated successfully"
-          : "Product created successfully",
+          : "Product created successfully"
       );
     } catch (error) {
       if (error instanceof ApolloError) {
@@ -216,7 +219,7 @@ export default function AdminProductsPage() {
         showError("Something went wrong");
       } else {
         showError(
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
     } finally {
@@ -238,114 +241,115 @@ export default function AdminProductsPage() {
         showError("Something went wrong");
       } else {
         showError(
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
     }
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">Products</h1>
+    <AdminLayout title="Products" subtitle="Manage your store products">
+      {/* Add Product Button */}
+      <div className="mb-6 flex justify-end">
         <button
           onClick={() => {
             resetForm();
             setIsModalOpen(true);
           }}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          className="btn-primary flex items-center space-x-2"
         >
-          Add Product
+          <Plus className="w-5 h-5" />
+          <span>Add Product</span>
         </button>
       </div>
 
       {/* Products Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Name
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Price
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Stock
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Category
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-4">
-                  <div>
-                    <div className="font-semibold text-gray-800">
-                      {product.name}
-                    </div>
-                    {product.sku && (
-                      <div className="text-xs text-gray-500">
-                        SKU: {product.sku}
-                      </div>
-                    )}
+      <AdminTable
+        columns={[
+          {
+            key: "name",
+            label: "Product",
+            render: (value, row) => (
+              <div>
+                <div className="font-medium text-text-primary">{row.name}</div>
+                {row.sku && (
+                  <div className="text-xs text-text-secondary">
+                    SKU: {row.sku}
                   </div>
-                </td>
-                <td className="py-3 px-4 text-gray-800">
-                  {formatPrice(product.price, currencySymbol)}
-                </td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`font-semibold ${
-                      product.stockQuantity < 10
-                        ? "text-red-600"
-                        : "text-green-600"
-                    }`}
-                  >
-                    {product.stockQuantity}
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-gray-800">
-                  {product.category?.name || "-"}
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(product)}
-                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors text-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                )}
+              </div>
+            ),
+          },
+          {
+            key: "price",
+            label: "Price",
+            render: (value) => formatPrice(value, currencySymbol),
+            hidden: "mobile",
+          },
+          {
+            key: "stockQuantity",
+            label: "Stock",
+            render: (value) => (
+              <span
+                className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                  value < 10
+                    ? "bg-red-100 text-red-800"
+                    : value < 50
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-green-100 text-green-800"
+                }`}
+              >
+                {value} units
+              </span>
+            ),
+          },
+          {
+            key: "category",
+            label: "Category",
+            render: (value) => value?.name || "Uncategorized",
+            hidden: "tablet",
+          },
+        ]}
+        data={products}
+        actions={[
+          {
+            label: "Edit",
+            icon: <Edit2 className="w-4 h-4" />,
+            onClick: handleEdit,
+            variant: "primary",
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="w-4 h-4" />,
+            onClick: (product) => handleDelete(product.id),
+            variant: "danger",
+          },
+        ]}
+        emptyMessage="No products found. Create your first product!"
+      />
 
       {/* Product Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-screen overflow-y-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              {editingProduct ? "Edit Product" : "Add Product"}
-            </h2>
+        <div className="modal-overlay">
+          <div className="modal-content max-w-2xl">
+            <div className="modal-header">
+              <h2 className="modal-title">
+                {editingProduct ? "Edit Product" : "Add Product"}
+              </h2>
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  resetForm();
+                }}
+                className="modal-close"
+              >
+                <X className="w-5 h-5 text-text-secondary" />
+              </button>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Name *
                 </label>
                 <input
@@ -355,12 +359,12 @@ export default function AdminProductsPage() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Description
                 </label>
                 <textarea
@@ -369,13 +373,13 @@ export default function AdminProductsPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-primary mb-1">
                     Price *
                   </label>
                   <input
@@ -386,12 +390,12 @@ export default function AdminProductsPage() {
                       setFormData({ ...formData, price: e.target.value })
                     }
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-primary mb-1">
                     Stock Quantity *
                   </label>
                   <input
@@ -404,14 +408,14 @@ export default function AdminProductsPage() {
                       })
                     }
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-primary mb-1">
                     SKU
                   </label>
                   <input
@@ -420,12 +424,12 @@ export default function AdminProductsPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, sku: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-primary mb-1">
                     Category
                   </label>
                   <select
@@ -433,7 +437,7 @@ export default function AdminProductsPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, categoryId: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary"
                   >
                     <option value="">None</option>
                     {categories.map((category) => (
@@ -547,19 +551,19 @@ export default function AdminProductsPage() {
                 )}
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {uploadingImages
                     ? "Uploading images..."
                     : uploading
-                      ? "Saving..."
-                      : editingProduct
-                        ? "Update"
-                        : "Create"}
+                    ? "Saving..."
+                    : editingProduct
+                    ? "Update"
+                    : "Create"}
                 </button>
                 <button
                   type="button"
@@ -567,7 +571,7 @@ export default function AdminProductsPage() {
                     setIsModalOpen(false);
                     resetForm();
                   }}
-                  className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
@@ -576,6 +580,6 @@ export default function AdminProductsPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }

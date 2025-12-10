@@ -63,7 +63,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:relative w-sidebar bg-sidebar h-screen flex flex-col overflow-y-auto scrollbar-hide transition-transform duration-300 z-40 ${
+        className={`fixed left-0 top-0 w-sidebar bg-sidebar h-screen flex flex-col overflow-y-auto scrollbar-hide transition-transform duration-300 z-40 ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >

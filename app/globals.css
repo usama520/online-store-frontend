@@ -14,11 +14,11 @@ body {
 /* Ziebart Admin Theme */
 @layer components {
   .admin-container {
-    @apply min-h-screen flex flex-col lg:flex-row bg-content-bg;
+    @apply min-h-screen bg-content-bg;
   }
 
   .admin-main {
-    @apply flex-1 flex flex-col w-full lg:w-auto;
+    @apply min-h-screen flex flex-col lg:ml-[280px];
   }
 
   .admin-header {
@@ -95,6 +95,65 @@ body {
 
   .badge-red {
     @apply bg-red-100 text-red-800;
+  }
+
+  .badge-purple {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .badge-indigo {
+    @apply bg-indigo-100 text-indigo-800;
+  }
+
+  .badge-gray {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  /* Form inputs */
+  .input {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white transition-shadow;
+  }
+
+  .input:focus {
+    @apply shadow-sm;
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50;
+  }
+
+  .modal-content {
+    @apply bg-card-bg rounded-xl p-4 sm:p-6 w-full max-h-[90vh] overflow-y-auto shadow-2xl;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between mb-6;
+  }
+
+  .modal-title {
+    @apply text-xl sm:text-2xl font-bold text-text-primary;
+  }
+
+  .modal-close {
+    @apply p-2 hover:bg-gray-100 rounded-lg transition-colors;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply text-center py-12 text-text-secondary;
+  }
+
+  .empty-state-icon {
+    @apply w-16 h-16 mx-auto mb-4 text-gray-300;
+  }
+
+  .empty-state-title {
+    @apply text-lg font-semibold text-text-primary mb-2;
+  }
+
+  .empty-state-text {
+    @apply text-sm text-text-secondary;
   }
 }
 

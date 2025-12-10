@@ -14,9 +14,11 @@ import { ShoppingCart, TrendingUp, Package, AlertCircle } from "lucide-react";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const { data: ordersData } = useQuery(GET_ORDERS);
-  const { data: productsData } = useQuery(GET_PRODUCTS);
+  const { data: ordersData, loading: ordersLoading } = useQuery(GET_ORDERS);
+  const { data: productsData, loading: productsLoading } = useQuery(GET_PRODUCTS);
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
+
+  const loading = ordersLoading || productsLoading;
 
   const orders = (ordersData?.orders || []) as Order[];
   const products = (productsData?.products || []) as Product[];
@@ -65,7 +67,21 @@ export default function AdminDashboard() {
     >
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        {statCards.map((stat, index) => {
+        {loading ? (
+          // Loading skeletons
+          [...Array(4)].map((_, index) => (
+            <div key={index} className="stat-card animate-pulse">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+                  <div className="h-8 bg-gray-200 rounded w-16"></div>
+                </div>
+                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+              </div>
+            </div>
+          ))
+        ) : (
+          statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div key={index} className="stat-card">
@@ -84,7 +100,8 @@ export default function AdminDashboard() {
               </div>
             </div>
           );
-        })}
+        })
+        )}
       </div>
 
       {/* Recent Activity */}
@@ -143,9 +160,15 @@ export default function AdminDashboard() {
                             ? "badge-yellow"
                             : order.status === "confirmed"
                             ? "badge-blue"
+                            : order.status === "processing"
+                            ? "badge-purple"
+                            : order.status === "shipped"
+                            ? "badge-indigo"
                             : order.status === "delivered"
                             ? "badge-green"
-                            : "bg-gray-100 text-gray-800"
+                            : order.status === "cancelled"
+                            ? "badge-red"
+                            : "badge-gray"
                         }`}
                       >
                         {order.status}

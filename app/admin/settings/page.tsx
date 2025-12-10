@@ -6,10 +6,14 @@ import { GET_STORE_SETTINGS } from "@/lib/graphql/queries";
 import { UPDATE_STORE_SETTINGS } from "@/lib/graphql/mutations";
 import { StoreSettings } from "@/lib/types";
 import { useToast } from "@/lib/hooks/useToast";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Store, Phone, Building2, Save } from "lucide-react";
 
 export default function AdminSettingsPage() {
   const { data, refetch } = useQuery(GET_STORE_SETTINGS);
-  const [updateSettings] = useMutation(UPDATE_STORE_SETTINGS);
+  const [updateSettings, { loading: saving }] = useMutation(
+    UPDATE_STORE_SETTINGS
+  );
   const { showError, showSuccess } = useToast();
 
   const storeSettings = data?.storeSettings as StoreSettings | null;
@@ -57,26 +61,29 @@ export default function AdminSettingsPage() {
         showError("Something went wrong");
       } else {
         showError(
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
     }
   };
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Store Settings</h1>
-
-      <form onSubmit={handleSubmit} className="max-w-3xl">
+    <AdminLayout title="Settings" subtitle="Configure your store settings">
+      <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
         {/* General Settings */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            General Settings
-          </h2>
+        <div className="stat-card">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-icon-blue/10 rounded-lg">
+              <Store className="w-5 h-5 text-icon-blue" />
+            </div>
+            <h2 className="text-lg sm:text-xl font-bold text-text-primary">
+              General Settings
+            </h2>
+          </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Store Name *
               </label>
               <input
@@ -86,42 +93,68 @@ export default function AdminSettingsPage() {
                   setFormData({ ...formData, storeName: e.target.value })
                 }
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1.5">
                   Primary Color
                 </label>
-                <input
-                  type="color"
-                  value={formData.primaryColor}
-                  onChange={(e) =>
-                    setFormData({ ...formData, primaryColor: e.target.value })
-                  }
-                  className="w-full h-10 border border-gray-300 rounded-lg cursor-pointer"
-                />
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={formData.primaryColor}
+                    onChange={(e) =>
+                      setFormData({ ...formData, primaryColor: e.target.value })
+                    }
+                    className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={formData.primaryColor}
+                    onChange={(e) =>
+                      setFormData({ ...formData, primaryColor: e.target.value })
+                    }
+                    className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white font-mono text-sm"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1.5">
                   Secondary Color
                 </label>
-                <input
-                  type="color"
-                  value={formData.secondaryColor}
-                  onChange={(e) =>
-                    setFormData({ ...formData, secondaryColor: e.target.value })
-                  }
-                  className="w-full h-10 border border-gray-300 rounded-lg cursor-pointer"
-                />
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={formData.secondaryColor}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        secondaryColor: e.target.value,
+                      })
+                    }
+                    className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={formData.secondaryColor}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        secondaryColor: e.target.value,
+                      })
+                    }
+                    className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white font-mono text-sm"
+                  />
+                </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Currency Symbol *
               </label>
               <input
@@ -133,9 +166,9 @@ export default function AdminSettingsPage() {
                 placeholder="e.g., Rs., $, €, £"
                 maxLength={3}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-text-muted mt-1.5">
                 This symbol will be displayed before all prices (e.g., Rs.
                 99.99)
               </p>
@@ -144,14 +177,19 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Contact Information */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            Contact Information
-          </h2>
+        <div className="stat-card">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-icon-green/10 rounded-lg">
+              <Phone className="w-5 h-5 text-icon-green" />
+            </div>
+            <h2 className="text-lg sm:text-xl font-bold text-text-primary">
+              Contact Information
+            </h2>
+          </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Contact Email
               </label>
               <input
@@ -160,12 +198,13 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, contactEmail: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                placeholder="support@yourstore.com"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Contact Phone
               </label>
               <input
@@ -174,25 +213,32 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, contactPhone: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                placeholder="+1 234 567 8900"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               />
             </div>
           </div>
         </div>
 
         {/* Bank Account Details */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            Bank Account Details
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">
-            These details will be displayed to customers who choose bank
-            transfer as payment method.
-          </p>
+        <div className="stat-card">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-icon-purple/10 rounded-lg">
+              <Building2 className="w-5 h-5 text-icon-purple" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-text-primary">
+                Bank Account Details
+              </h2>
+              <p className="text-sm text-text-muted">
+                Displayed to customers who choose bank transfer
+              </p>
+            </div>
+          </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Bank Name
               </label>
               <input
@@ -202,12 +248,12 @@ export default function AdminSettingsPage() {
                   setFormData({ ...formData, bankName: e.target.value })
                 }
                 placeholder="e.g., National Bank"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Account Name
               </label>
               <input
@@ -217,12 +263,12 @@ export default function AdminSettingsPage() {
                   setFormData({ ...formData, bankAccountName: e.target.value })
                 }
                 placeholder="e.g., My Online Store LLC"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Account Number
               </label>
               <input
@@ -235,7 +281,7 @@ export default function AdminSettingsPage() {
                   })
                 }
                 placeholder="e.g., 1234567890"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               />
             </div>
           </div>
@@ -243,11 +289,13 @@ export default function AdminSettingsPage() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          disabled={saving}
+          className="w-full btn-primary py-3 flex items-center justify-center gap-2"
         >
-          Save Settings
+          <Save className="w-5 h-5" />
+          {saving ? "Saving..." : "Save Settings"}
         </button>
       </form>
-    </div>
+    </AdminLayout>
   );
 }

@@ -10,9 +10,15 @@ import {
 import { formatPrice } from "@/lib/utils";
 import { Order, StoreSettings } from "@/lib/types";
 import { useToast } from "@/lib/hooks/useToast";
+import AdminLayout from "@/components/admin/AdminLayout";
+import AdminTable, {
+  TableColumn,
+  TableAction,
+} from "@/components/admin/AdminTable";
+import { Eye, X } from "lucide-react";
 
 export default function AdminOrdersPage() {
-  const { data, refetch } = useQuery(GET_ORDERS);
+  const { data, loading, refetch } = useQuery(GET_ORDERS);
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const [updateOrderStatus] = useMutation(UPDATE_ORDER_STATUS);
   const [updatePaymentStatus] = useMutation(UPDATE_PAYMENT_STATUS);
@@ -49,7 +55,7 @@ export default function AdminOrdersPage() {
         showError("Something went wrong");
       } else {
         showError(
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
     }
@@ -72,207 +78,250 @@ export default function AdminOrdersPage() {
         showError("Something went wrong");
       } else {
         showError(
-          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
     }
   };
 
-  return (
-    <div>
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Orders</h1>
+  const getStatusBadge = (status: string) => {
+    const statusStyles: Record<string, string> = {
+      pending: "bg-yellow-100 text-yellow-800",
+      confirmed: "bg-blue-100 text-blue-800",
+      processing: "bg-purple-100 text-purple-800",
+      shipped: "bg-indigo-100 text-indigo-800",
+      delivered: "bg-green-100 text-green-800",
+      cancelled: "bg-red-100 text-red-800",
+    };
+    return (
+      <span
+        className={`badge ${
+          statusStyles[status] || "bg-gray-100 text-gray-800"
+        }`}
+      >
+        {status}
+      </span>
+    );
+  };
 
-      {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Order ID
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Customer
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Total
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Status
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Payment
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Date
-              </th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-4 text-sm text-gray-800">
-                  #{order.id.substring(0, 8)}
-                </td>
-                <td className="py-3 px-4">
-                  <div>
-                    <div className="text-sm font-semibold text-gray-800">
-                      {order.customerName}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {order.customerEmail}
-                    </div>
-                  </div>
-                </td>
-                <td className="py-3 px-4 text-sm text-gray-800">
-                  {formatPrice(order.totalAmount, currencySymbol)}
-                </td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`inline-block px-2 py-1 text-xs rounded-full ${
-                      order.status === "pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : order.status === "confirmed"
-                          ? "bg-blue-100 text-blue-800"
-                          : order.status === "processing"
-                            ? "bg-purple-100 text-purple-800"
-                            : order.status === "shipped"
-                              ? "bg-indigo-100 text-indigo-800"
-                              : order.status === "delivered"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <div>
-                    <div className="text-sm text-gray-800 capitalize">
-                      {order.payment?.paymentMethod.replace("_", " ")}
-                    </div>
-                    <span
-                      className={`inline-block px-2 py-1 text-xs rounded-full ${
-                        order.payment?.status === "confirmed"
-                          ? "bg-green-100 text-green-800"
-                          : order.payment?.status === "failed"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {order.payment?.status}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-3 px-4 text-sm text-gray-800">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </td>
-                <td className="py-3 px-4">
-                  <button
-                    onClick={() => setSelectedOrder(order)}
-                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  const getPaymentBadge = (status: string) => {
+    const statusStyles: Record<string, string> = {
+      confirmed: "bg-green-100 text-green-800",
+      failed: "bg-red-100 text-red-800",
+      pending: "bg-yellow-100 text-yellow-800",
+    };
+    return (
+      <span
+        className={`badge ${
+          statusStyles[status] || "bg-gray-100 text-gray-800"
+        }`}
+      >
+        {status}
+      </span>
+    );
+  };
+
+  const columns: TableColumn[] = [
+    {
+      key: "id",
+      label: "Order ID",
+      render: (value) => (
+        <span className="font-mono">#{value.substring(0, 8)}</span>
+      ),
+    },
+    {
+      key: "customerName",
+      label: "Customer",
+      render: (value, row) => (
+        <div>
+          <div className="font-semibold">{value}</div>
+          <div className="text-xs text-text-secondary hidden sm:block">
+            {row.customerEmail}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "totalAmount",
+      label: "Total",
+      render: (value) => formatPrice(value, currencySymbol),
+      hidden: "mobile",
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (value) => getStatusBadge(value),
+    },
+    {
+      key: "payment",
+      label: "Payment",
+      hidden: "mobile",
+      render: (value) => (
+        <div>
+          <div className="text-xs capitalize mb-1">
+            {value?.paymentMethod?.replace("_", " ")}
+          </div>
+          {getPaymentBadge(value?.status || "pending")}
+        </div>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Date",
+      hidden: "tablet",
+      render: (value) => new Date(value).toLocaleDateString(),
+    },
+  ];
+
+  const actions: TableAction[] = [
+    {
+      label: "View",
+      icon: <Eye className="w-4 h-4" />,
+      onClick: (row) => setSelectedOrder(row),
+      variant: "primary",
+    },
+  ];
+
+  return (
+    <AdminLayout title="Orders" subtitle="Manage customer orders">
+      <AdminTable
+        columns={columns}
+        data={orders}
+        actions={actions}
+        loading={loading}
+        emptyMessage="No orders yet"
+      />
 
       {/* Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-screen overflow-y-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              Order #{selectedOrder.id.substring(0, 8)}
-            </h2>
+        <div className="modal-overlay">
+          <div className="modal-content max-w-3xl">
+            <div className="modal-header">
+              <h2 className="modal-title">
+                Order #{selectedOrder.id.substring(0, 8)}
+              </h2>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="modal-close"
+              >
+                <X className="w-5 h-5 text-text-secondary" />
+              </button>
+            </div>
 
             {/* Customer Info */}
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-800 mb-2">
+              <h3 className="font-semibold text-text-primary mb-3">
                 Customer Information
               </h3>
-              <div className="bg-gray-50 p-4 rounded space-y-1 text-sm">
+              <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm">
                 <p>
-                  <span className="font-medium">Name:</span>{" "}
-                  {selectedOrder.customerName}
+                  <span className="font-medium text-text-secondary">Name:</span>{" "}
+                  <span className="text-text-primary">
+                    {selectedOrder.customerName}
+                  </span>
                 </p>
                 <p>
-                  <span className="font-medium">Email:</span>{" "}
-                  {selectedOrder.customerEmail}
+                  <span className="font-medium text-text-secondary">
+                    Email:
+                  </span>{" "}
+                  <span className="text-text-primary">
+                    {selectedOrder.customerEmail}
+                  </span>
                 </p>
                 <p>
-                  <span className="font-medium">Phone:</span>{" "}
-                  {selectedOrder.customerPhone}
+                  <span className="font-medium text-text-secondary">
+                    Phone:
+                  </span>{" "}
+                  <span className="text-text-primary">
+                    {selectedOrder.customerPhone}
+                  </span>
                 </p>
                 <p>
-                  <span className="font-medium">Address:</span>{" "}
-                  {selectedOrder.streetAddress}, {selectedOrder.city}
-                  {selectedOrder.postalCode
-                    ? `, ${selectedOrder.postalCode}`
-                    : ""}
+                  <span className="font-medium text-text-secondary">
+                    Address:
+                  </span>{" "}
+                  <span className="text-text-primary">
+                    {selectedOrder.streetAddress}, {selectedOrder.city}
+                    {selectedOrder.postalCode
+                      ? `, ${selectedOrder.postalCode}`
+                      : ""}
+                  </span>
                 </p>
               </div>
             </div>
 
             {/* Order Items */}
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-800 mb-2">Order Items</h3>
-              <div className="border rounded overflow-hidden">
-                <table className="min-w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">
-                        Product
-                      </th>
-                      <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">
-                        Qty
-                      </th>
-                      <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">
-                        Price
-                      </th>
-                      <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">
-                        Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedOrder.orderItems.map((item) => (
-                      <tr key={item.id} className="border-t">
-                        <td className="py-2 px-3 text-sm">
-                          {item.product.name}
+              <h3 className="font-semibold text-text-primary mb-3">
+                Order Items
+              </h3>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="text-left py-2 px-3 text-xs sm:text-sm font-semibold text-text-primary">
+                          Product
+                        </th>
+                        <th className="text-left py-2 px-3 text-xs sm:text-sm font-semibold text-text-primary">
+                          Qty
+                        </th>
+                        <th className="text-left py-2 px-3 text-xs sm:text-sm font-semibold text-text-primary hidden sm:table-cell">
+                          Price
+                        </th>
+                        <th className="text-left py-2 px-3 text-xs sm:text-sm font-semibold text-text-primary">
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedOrder.orderItems.map((item) => (
+                        <tr key={item.id} className="border-t border-gray-100">
+                          <td className="py-2 px-3 text-xs sm:text-sm text-text-primary">
+                            {item.product.name}
+                          </td>
+                          <td className="py-2 px-3 text-xs sm:text-sm text-text-primary">
+                            {item.quantity}
+                          </td>
+                          <td className="py-2 px-3 text-xs sm:text-sm text-text-primary hidden sm:table-cell">
+                            {formatPrice(item.price, currencySymbol)}
+                          </td>
+                          <td className="py-2 px-3 text-xs sm:text-sm text-text-primary font-medium">
+                            {formatPrice(item.subtotal, currencySymbol)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="bg-gray-50 font-semibold">
+                      <tr>
+                        <td
+                          colSpan={2}
+                          className="py-2 px-3 text-right text-sm sm:hidden"
+                        >
+                          Total:
                         </td>
-                        <td className="py-2 px-3 text-sm">{item.quantity}</td>
-                        <td className="py-2 px-3 text-sm">
-                          {formatPrice(item.price, currencySymbol)}
+                        <td
+                          colSpan={3}
+                          className="py-2 px-3 text-right text-sm hidden sm:table-cell"
+                        >
+                          Total:
                         </td>
-                        <td className="py-2 px-3 text-sm">
-                          {formatPrice(item.subtotal, currencySymbol)}
+                        <td className="py-2 px-3 text-sm text-primary font-bold">
+                          {formatPrice(
+                            selectedOrder.totalAmount,
+                            currencySymbol
+                          )}
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                  <tfoot className="bg-gray-50 font-semibold">
-                    <tr>
-                      <td colSpan={3} className="py-2 px-3 text-right">
-                        Total:
-                      </td>
-                      <td className="py-2 px-3">
-                        {formatPrice(selectedOrder.totalAmount, currencySymbol)}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
             </div>
 
             {/* Order Status */}
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-800 mb-2">
+              <h3 className="font-semibold text-text-primary mb-3">
                 Update Order Status
               </h3>
               <select
@@ -280,7 +329,7 @@ export default function AdminOrdersPage() {
                 onChange={(e) =>
                   handleUpdateOrderStatus(selectedOrder.id, e.target.value)
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
               >
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
@@ -294,45 +343,38 @@ export default function AdminOrdersPage() {
             {/* Payment Status */}
             {selectedOrder.payment && (
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-2">
+                <h3 className="font-semibold text-text-primary mb-3">
                   Payment Status
                 </h3>
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-600 mb-2">
-                      Method:{" "}
-                      <span className="font-medium capitalize">
-                        {selectedOrder.payment.paymentMethod.replace("_", " ")}
-                      </span>
-                    </p>
-                    <select
-                      value={selectedOrder.payment.status}
-                      onChange={(e) =>
-                        handleUpdatePaymentStatus(
-                          selectedOrder.id,
-                          e.target.value,
-                        )
-                      }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="failed">Failed</option>
-                    </select>
-                  </div>
-                </div>
+                <p className="text-sm text-text-secondary mb-2">
+                  Method:{" "}
+                  <span className="font-medium capitalize text-text-primary">
+                    {selectedOrder.payment.paymentMethod.replace("_", " ")}
+                  </span>
+                </p>
+                <select
+                  value={selectedOrder.payment.status}
+                  onChange={(e) =>
+                    handleUpdatePaymentStatus(selectedOrder.id, e.target.value)
+                  }
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="failed">Failed</option>
+                </select>
               </div>
             )}
 
             <button
               onClick={() => setSelectedOrder(null)}
-              className="w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+              className="w-full btn-secondary py-3"
             >
               Close
             </button>
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }
