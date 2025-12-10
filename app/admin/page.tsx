@@ -8,8 +8,12 @@ import {
 } from "@/lib/graphql/queries";
 import { formatPrice } from "@/lib/utils";
 import { Order, Product, StoreSettings } from "@/lib/types";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { ShoppingCart, TrendingUp, Package, AlertCircle } from "lucide-react";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
   const { data: ordersData } = useQuery(GET_ORDERS);
   const { data: productsData } = useQuery(GET_PRODUCTS);
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
@@ -23,108 +27,145 @@ export default function AdminDashboard() {
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
   const lowStockProducts = products.filter((p) => p.stockQuantity < 10).length;
 
+  const statCards = [
+    {
+      title: "Total Orders",
+      value: orders.length,
+      icon: ShoppingCart,
+      iconColor: "bg-icon-blue",
+      iconTextColor: "text-icon-blue",
+    },
+    {
+      title: "Total Products",
+      value: products.length,
+      icon: Package,
+      iconColor: "bg-icon-green",
+      iconTextColor: "text-icon-green",
+    },
+    {
+      title: "Total Revenue",
+      value: formatPrice(totalRevenue, currencySymbol),
+      icon: TrendingUp,
+      iconColor: "bg-icon-purple",
+      iconTextColor: "text-icon-purple",
+    },
+    {
+      title: "Pending Orders",
+      value: pendingOrders,
+      icon: AlertCircle,
+      iconColor: "bg-icon-orange",
+      iconTextColor: "text-icon-orange",
+    },
+  ];
+
   return (
-    <div>
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Dashboard</h1>
-
+    <AdminLayout
+      title="Dashboard"
+      subtitle={`Welcome back, ${user?.email?.split("@")[0] || "Admin"}`}
+    >
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">
-            Total Orders
-          </h3>
-          <p className="text-3xl font-bold text-blue-600">{orders.length}</p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        {statCards.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <div key={index} className="stat-card">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="stat-label">{stat.title}</p>
+                  <p className="stat-number">{stat.value}</p>
+                </div>
+                <div
+                  className={`stat-icon ${stat.iconColor} ml-2 flex-shrink-0`}
+                >
+                  <Icon
+                    className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.iconTextColor}`}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">
-            Pending Orders
-          </h3>
-          <p className="text-3xl font-bold text-yellow-600">{pendingOrders}</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">
-            Total Revenue
-          </h3>
-          <p className="text-3xl font-bold text-green-600">
-            {formatPrice(totalRevenue, currencySymbol)}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">
-            Low Stock Items
-          </h3>
-          <p className="text-3xl font-bold text-red-600">{lowStockProducts}</p>
-        </div>
+      {/* Recent Activity */}
+      <div className="stat-card mb-4 sm:mb-6">
+        <h2 className="text-base sm:text-lg font-bold text-text-primary mb-3 sm:mb-4">
+          Recent Activity
+        </h2>
+        <p className="text-text-secondary text-sm">
+          No recent activity to display.
+        </p>
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Recent Orders</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                  Order ID
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                  Customer
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                  Total
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                  Status
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                  Payment
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.slice(0, 10).map((order) => (
-                <tr key={order.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-4 text-sm text-gray-800">
-                    #{order.id.substring(0, 8)}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-800">
-                    {order.customerName}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-800">
-                    {formatPrice(order.totalAmount, currencySymbol)}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-block px-2 py-1 text-xs rounded-full ${
-                        order.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : order.status === "confirmed"
-                            ? "bg-blue-100 text-blue-800"
-                            : order.status === "delivered"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-800 capitalize">
-                    {order.payment?.paymentMethod.replace("_", " ")}
-                  </td>
+      {orders.length > 0 && (
+        <div className="stat-card mb-4 sm:mb-6">
+          <h2 className="text-base sm:text-lg font-bold text-text-primary mb-3 sm:mb-4">
+            Recent Orders
+          </h2>
+          <div className="table-responsive">
+            <table className="min-w-full">
+              <thead>
+                <tr className="table-header">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-text-primary">
+                    Order ID
+                  </th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-text-primary">
+                    Customer
+                  </th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-text-primary">
+                    Total
+                  </th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-text-primary">
+                    Status
+                  </th>
+                  <th className="hidden sm:table-cell text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-text-primary">
+                    Payment
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {orders.slice(0, 10).map((order) => (
+                  <tr key={order.id} className="table-row">
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-primary">
+                      #{order.id.substring(0, 8)}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-primary truncate">
+                      {order.customerName}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-primary">
+                      {formatPrice(order.totalAmount, currencySymbol)}
+                    </td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4">
+                      <span
+                        className={`badge ${
+                          order.status === "pending"
+                            ? "badge-yellow"
+                            : order.status === "confirmed"
+                            ? "badge-blue"
+                            : order.status === "delivered"
+                            ? "badge-green"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="hidden sm:table-cell py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-primary capitalize">
+                      {order.payment?.paymentMethod.replace("_", " ")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Low Stock Products */}
       {lowStockProducts > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+        <div className="stat-card">
+          <h2 className="text-base sm:text-lg font-bold text-text-primary mb-3 sm:mb-4">
             Low Stock Alert
           </h2>
           <div className="space-y-2">
@@ -133,10 +174,12 @@ export default function AdminDashboard() {
               .map((product) => (
                 <div
                   key={product.id}
-                  className="flex justify-between items-center p-3 bg-red-50 rounded"
+                  className="flex justify-between items-center p-2 sm:p-3 bg-red-50 rounded text-sm sm:text-base"
                 >
-                  <span className="text-gray-800">{product.name}</span>
-                  <span className="text-red-600 font-semibold">
+                  <span className="text-text-primary truncate">
+                    {product.name}
+                  </span>
+                  <span className="text-primary font-semibold ml-2 flex-shrink-0">
                     {product.stockQuantity} left
                   </span>
                 </div>
@@ -144,6 +187,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }
