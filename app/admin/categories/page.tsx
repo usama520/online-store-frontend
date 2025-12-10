@@ -34,7 +34,7 @@ export default function CategoriesPage() {
   const { data, loading, refetch } = useQuery(GET_CATEGORIES);
   const [createCategory, { loading: creating }] = useMutation(CREATE_CATEGORY);
   const [updateCategory, { loading: updating }] = useMutation(UPDATE_CATEGORY);
-  const [deleteCategory, { loading: deleting }] = useMutation(DELETE_CATEGORY);
+  const [deleteCategory] = useMutation(DELETE_CATEGORY);
 
   const categories: Category[] = data?.categories || [];
 
@@ -128,7 +128,7 @@ export default function CategoriesPage() {
     }
   };
 
-  const tableColumns: TableColumn[] = [
+  const tableColumns: TableColumn<Category>[] = [
     {
       key: "name",
       label: "Name",
@@ -136,12 +136,12 @@ export default function CategoriesPage() {
     {
       key: "description",
       label: "Description",
-      render: (value) => value || "-",
+      render: (value) => (value as string) || "-",
       hidden: "mobile",
     },
   ];
 
-  const tableActions: TableAction[] = [
+  const tableActions: TableAction<Category>[] = [
     {
       label: "Edit",
       icon: <Edit2 className="w-4 h-4" />,
@@ -170,7 +170,7 @@ export default function CategoriesPage() {
       </div>
 
       {/* Categories Table */}
-      <AdminTable
+      <AdminTable<Category>
         columns={tableColumns}
         data={categories}
         actions={tableActions}

@@ -15,7 +15,8 @@ import { ShoppingCart, TrendingUp, Package, AlertCircle } from "lucide-react";
 export default function AdminDashboard() {
   const { user } = useAuth();
   const { data: ordersData, loading: ordersLoading } = useQuery(GET_ORDERS);
-  const { data: productsData, loading: productsLoading } = useQuery(GET_PRODUCTS);
+  const { data: productsData, loading: productsLoading } =
+    useQuery(GET_PRODUCTS);
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
 
   const loading = ordersLoading || productsLoading;
@@ -67,41 +68,39 @@ export default function AdminDashboard() {
     >
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        {loading ? (
-          // Loading skeletons
-          [...Array(4)].map((_, index) => (
-            <div key={index} className="stat-card animate-pulse">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
-                  <div className="h-8 bg-gray-200 rounded w-16"></div>
-                </div>
-                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-              </div>
-            </div>
-          ))
-        ) : (
-          statCards.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <div key={index} className="stat-card">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <p className="stat-label">{stat.title}</p>
-                  <p className="stat-number">{stat.value}</p>
-                </div>
-                <div
-                  className={`stat-icon ${stat.iconColor} ml-2 flex-shrink-0`}
-                >
-                  <Icon
-                    className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.iconTextColor}`}
-                  />
+        {loading
+          ? // Loading skeletons
+            [...Array(4)].map((_, index) => (
+              <div key={index} className="stat-card animate-pulse">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+                    <div className="h-8 bg-gray-200 rounded w-16"></div>
+                  </div>
+                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
                 </div>
               </div>
-            </div>
-          );
-        })
-        )}
+            ))
+          : statCards.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="stat-card">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className="stat-label">{stat.title}</p>
+                      <p className="stat-number">{stat.value}</p>
+                    </div>
+                    <div
+                      className={`stat-icon ${stat.iconColor} ml-2 flex-shrink-0`}
+                    >
+                      <Icon
+                        className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.iconTextColor}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
       </div>
 
       {/* Recent Activity */}

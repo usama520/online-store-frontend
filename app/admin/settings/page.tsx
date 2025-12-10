@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, ApolloError } from "@apollo/client";
 import { GET_STORE_SETTINGS } from "@/lib/graphql/queries";
 import { UPDATE_STORE_SETTINGS } from "@/lib/graphql/mutations";
@@ -20,9 +20,9 @@ export default function AdminSettingsPage() {
 
   const [formData, setFormData] = useState({
     storeName: "",
-    primaryColor: "",
-    secondaryColor: "",
-    currencySymbol: "",
+    primaryColor: "#3B82F6",
+    secondaryColor: "#10B981",
+    currencySymbol: "Rs.",
     bankAccountName: "",
     bankAccountNumber: "",
     bankName: "",
@@ -30,8 +30,14 @@ export default function AdminSettingsPage() {
     contactPhone: "",
   });
 
+  // Track if we've synced to prevent re-syncing
+  const hasSynced = useRef(false);
+
+  // Sync form data when storeSettings loads - this is syncing external data
   useEffect(() => {
-    if (storeSettings) {
+    if (storeSettings && !hasSynced.current) {
+      hasSynced.current = true;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         storeName: storeSettings.storeName || "",
         primaryColor: storeSettings.primaryColor || "#3B82F6",

@@ -3,7 +3,7 @@ import { apolloClient } from "../graphql/client";
 
 interface GraphQLUploadOptions {
   query: string | DocumentNode;
-  variables?: Record<string, any>;
+  variables?: Record<string, unknown>;
 }
 
 /**
@@ -29,7 +29,7 @@ export async function graphqlUpload({
     }
 
     return result.data;
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("GraphQL Upload Error:", err);
     throw err;
   }

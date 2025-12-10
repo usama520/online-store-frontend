@@ -13,12 +13,7 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const { isAdmin, isAuthenticated } = useAuth();
-  const { _hasHydrated, logout } = useAuthStore();
-
-  const handleLogout = () => {
-    logout();
-    router.push("/admin/login");
-  };
+  const { _hasHydrated } = useAuthStore();
 
   // Skip auth check for login page
   const isLoginPage = pathname === "/admin/login";

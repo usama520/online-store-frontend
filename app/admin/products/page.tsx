@@ -165,7 +165,17 @@ export default function AdminProductsPage() {
       setUploadingImages(false);
 
       // Now create/update product with signed blob IDs
-      const input: any = {
+      const input: {
+        name: string;
+        description: string | null;
+        price: number;
+        sku: string | null;
+        stockQuantity: number;
+        categoryId: string | null;
+        images: string[];
+        id?: string;
+        removeImageIds?: string[];
+      } = {
         name: formData.name,
         description: formData.description || null,
         price: parseFloat(formData.price),
@@ -264,17 +274,19 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Products Table */}
-      <AdminTable
+      <AdminTable<Product>
         columns={[
           {
             key: "name",
             label: "Product",
             render: (value, row) => (
               <div>
-                <div className="font-medium text-text-primary">{row.name}</div>
+                <div className="font-medium text-text-primary">
+                  {row.name as string}
+                </div>
                 {row.sku && (
                   <div className="text-xs text-text-secondary">
-                    SKU: {row.sku}
+                    SKU: {row.sku as string}
                   </div>
                 )}
               </div>
@@ -283,30 +295,34 @@ export default function AdminProductsPage() {
           {
             key: "price",
             label: "Price",
-            render: (value) => formatPrice(value, currencySymbol),
+            render: (value) => formatPrice(value as number, currencySymbol),
             hidden: "mobile",
           },
           {
             key: "stockQuantity",
             label: "Stock",
-            render: (value) => (
-              <span
-                className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                  value < 10
-                    ? "bg-red-100 text-red-800"
-                    : value < 50
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-green-100 text-green-800"
-                }`}
-              >
-                {value} units
-              </span>
-            ),
+            render: (value) => {
+              const stock = value as number;
+              return (
+                <span
+                  className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                    stock < 10
+                      ? "bg-red-100 text-red-800"
+                      : stock < 50
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-green-100 text-green-800"
+                  }`}
+                >
+                  {stock} units
+                </span>
+              );
+            },
           },
           {
             key: "category",
             label: "Category",
-            render: (value) => value?.name || "Uncategorized",
+            render: (value) =>
+              (value as { name?: string })?.name || "Uncategorized",
             hidden: "tablet",
           },
         ]}
@@ -478,6 +494,7 @@ export default function AdminProductsPage() {
                     <div className="grid grid-cols-4 gap-2">
                       {imagePreviews.map((preview, index) => (
                         <div key={index} className="relative group">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={preview.preview}
                             alt={`Preview ${index + 1}`}
@@ -513,6 +530,7 @@ export default function AdminProductsPage() {
                     <div className="grid grid-cols-4 gap-2">
                       {existingImages.map((image, index) => (
                         <div key={index} className="relative group">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={image.url}
                             alt={`Product ${index + 1}`}

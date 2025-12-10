@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/zustand/cartStore";
 import { useStoreSettingsStore } from "@/lib/zustand/storeSettingsStore";
@@ -8,16 +8,20 @@ import { formatPrice } from "@/lib/utils";
 import Navbar from "@/components/ui/Navbar";
 import Image from "next/image";
 
+// Subscribe returns a no-op unsubscribe
+const emptySubscribe = () => () => {};
+
 export default function CartPage() {
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
+  // Track hydration without useEffect + setState
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart } =
     useCartStore();
   const { settings } = useStoreSettingsStore();
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   // Don't access store values until mounted to prevent hydration mismatch
   if (!isMounted) {

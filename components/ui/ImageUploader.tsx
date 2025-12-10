@@ -45,21 +45,24 @@ export default function ImageUploader({
   });
   const { showError, showSuccess } = useToast();
 
-  const validateFile = (file: File): string | null => {
-    // Validate file type (JPEG and PNG only)
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    if (!allowedTypes.includes(file.type)) {
-      return "Only JPEG and PNG images are allowed";
-    }
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      // Validate file type (JPEG and PNG only)
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+      if (!allowedTypes.includes(file.type)) {
+        return "Only JPEG and PNG images are allowed";
+      }
 
-    // Validate file size
-    if (file.size > maxSize) {
-      const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1);
-      return `File size must be less than ${maxSizeMB}MB`;
-    }
+      // Validate file size
+      if (file.size > maxSize) {
+        const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1);
+        return `File size must be less than ${maxSizeMB}MB`;
+      }
 
-    return null;
-  };
+      return null;
+    },
+    [maxSize]
+  );
 
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
@@ -99,7 +102,7 @@ export default function ImageUploader({
         });
       }
     },
-    [multiple, maxSize, files.length, showError],
+    [multiple, files.length, showError, validateFile]
   );
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -179,7 +182,7 @@ export default function ImageUploader({
           // Update file with signed ID
           setFiles((prev) => {
             const updated = prev.map((f, idx) =>
-              idx === i ? { ...f, signedId: result.signedBlobId } : f,
+              idx === i ? { ...f, signedId: result.signedBlobId } : f
             );
             filesRef.current = updated;
             return updated;
@@ -192,7 +195,7 @@ export default function ImageUploader({
           // Update file with error
           setFiles((prev) => {
             const updated = prev.map((f, idx) =>
-              idx === i ? { ...f, error: errorMessage } : f,
+              idx === i ? { ...f, error: errorMessage } : f
             );
             filesRef.current = updated;
             return updated;
@@ -210,7 +213,7 @@ export default function ImageUploader({
           showSuccess(
             `Successfully uploaded ${signedIds.length} file${
               signedIds.length > 1 ? "s" : ""
-            }`,
+            }`
           );
         }
       } else {
@@ -328,6 +331,7 @@ export default function ImageUploader({
             {files.map((fileWithPreview, index) => (
               <div key={index} className="relative group">
                 <div className="relative aspect-square rounded-lg overflow-hidden border border-gray-300 bg-gray-100">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={fileWithPreview.preview}
                     alt={fileWithPreview.file.name}
@@ -433,10 +437,10 @@ export default function ImageUploader({
               {isUploading
                 ? "Uploading..."
                 : files.every((f) => f.signedId)
-                  ? "All Uploaded"
-                  : `Upload ${files.filter((f) => !f.signedId).length} File${
-                      files.filter((f) => !f.signedId).length !== 1 ? "s" : ""
-                    }`}
+                ? "All Uploaded"
+                : `Upload ${files.filter((f) => !f.signedId).length} File${
+                    files.filter((f) => !f.signedId).length !== 1 ? "s" : ""
+                  }`}
             </button>
           </div>
         </div>

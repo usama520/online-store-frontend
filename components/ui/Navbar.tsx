@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/zustand/cartStore";
 import { useAuth } from "@/lib/hooks/useAuth";
 
+// Subscribe returns a no-op unsubscribe
+const emptySubscribe = () => () => {};
+
 export default function Navbar() {
   const { getTotalItems } = useCartStore();
   const { isAuthenticated, user, isAdmin, logout, hasHydrated } = useAuth();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // Track hydration without useEffect + setState
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   const cartItemCount = isMounted ? getTotalItems() : 0;
 

@@ -121,12 +121,12 @@ export default function AdminOrdersPage() {
     );
   };
 
-  const columns: TableColumn[] = [
+  const columns: TableColumn<Order>[] = [
     {
       key: "id",
       label: "Order ID",
       render: (value) => (
-        <span className="font-mono">#{value.substring(0, 8)}</span>
+        <span className="font-mono">#{(value as string).substring(0, 8)}</span>
       ),
     },
     {
@@ -134,9 +134,9 @@ export default function AdminOrdersPage() {
       label: "Customer",
       render: (value, row) => (
         <div>
-          <div className="font-semibold">{value}</div>
+          <div className="font-semibold">{value as string}</div>
           <div className="text-xs text-text-secondary hidden sm:block">
-            {row.customerEmail}
+            {row.customerEmail as string}
           </div>
         </div>
       ),
@@ -144,36 +144,41 @@ export default function AdminOrdersPage() {
     {
       key: "totalAmount",
       label: "Total",
-      render: (value) => formatPrice(value, currencySymbol),
+      render: (value) => formatPrice(value as number, currencySymbol),
       hidden: "mobile",
     },
     {
       key: "status",
       label: "Status",
-      render: (value) => getStatusBadge(value),
+      render: (value) => getStatusBadge(value as string),
     },
     {
       key: "payment",
       label: "Payment",
       hidden: "mobile",
-      render: (value) => (
-        <div>
-          <div className="text-xs capitalize mb-1">
-            {value?.paymentMethod?.replace("_", " ")}
+      render: (value) => {
+        const payment = value as
+          | { paymentMethod?: string; status?: string }
+          | undefined;
+        return (
+          <div>
+            <div className="text-xs capitalize mb-1">
+              {payment?.paymentMethod?.replace("_", " ")}
+            </div>
+            {getPaymentBadge(payment?.status || "pending")}
           </div>
-          {getPaymentBadge(value?.status || "pending")}
-        </div>
-      ),
+        );
+      },
     },
     {
       key: "createdAt",
       label: "Date",
       hidden: "tablet",
-      render: (value) => new Date(value).toLocaleDateString(),
+      render: (value) => new Date(value as string).toLocaleDateString(),
     },
   ];
 
-  const actions: TableAction[] = [
+  const actions: TableAction<Order>[] = [
     {
       label: "View",
       icon: <Eye className="w-4 h-4" />,
@@ -184,7 +189,7 @@ export default function AdminOrdersPage() {
 
   return (
     <AdminLayout title="Orders" subtitle="Manage customer orders">
-      <AdminTable
+      <AdminTable<Order>
         columns={columns}
         data={orders}
         actions={actions}

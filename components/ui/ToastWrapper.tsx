@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useToastContext } from "@/lib/providers/ToastProvider";
 import { ToastContainer } from "./Toast";
 
-export const ToastWrapper = () => {
-  const [isMounted, setIsMounted] = useState(false);
-  const { toasts, removeToast } = useToastContext();
+// Subscribe returns a no-op unsubscribe
+const emptySubscribe = () => () => {};
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+export const ToastWrapper = () => {
+  const { toasts, removeToast } = useToastContext();
+  // Track hydration without useEffect + setState
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   if (!isMounted) {
     return null;

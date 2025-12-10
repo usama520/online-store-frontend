@@ -19,7 +19,7 @@ if (process.env.NEXT_PUBLIC_API_URL) {
       port: url.port,
       pathname: "/rails/**",
     });
-  } catch (e) {
+  } catch {
     // Ignore invalid URL
   }
 }

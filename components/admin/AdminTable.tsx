@@ -1,41 +1,41 @@
 "use client";
 
-import { ReactNode, useState, useRef, useEffect } from "react";
-import { Trash2, Edit2, ChevronDown } from "lucide-react";
+import { ReactNode, useState, useRef, useLayoutEffect } from "react";
+import { ChevronDown } from "lucide-react";
 
-export interface TableColumn {
+export interface TableColumn<T = unknown> {
   key: string;
   label: string;
-  render?: (value: any, row: any) => ReactNode;
+  render?: (value: unknown, row: T) => ReactNode;
   width?: string;
   hidden?: "mobile" | "tablet" | "none";
 }
 
-export interface TableAction {
+export interface TableAction<T = unknown> {
   label: string;
-  onClick: (row: any) => void;
+  onClick: (row: T) => void;
   icon?: ReactNode;
   variant?: "primary" | "danger" | "secondary";
 }
 
-interface AdminTableProps {
-  columns: TableColumn[];
-  data: any[];
-  actions?: TableAction[];
+interface AdminTableProps<T = unknown> {
+  columns: TableColumn<T>[];
+  data: T[];
+  actions?: TableAction<T>[];
   loading?: boolean;
   emptyMessage?: string;
   /** Enable expandable rows on mobile for hidden columns */
   expandableOnMobile?: boolean;
 }
 
-export default function AdminTable({
+export default function AdminTable<T extends object>({
   columns,
   data,
   actions,
   loading = false,
   emptyMessage = "No data available",
   expandableOnMobile = true,
-}: AdminTableProps) {
+}: AdminTableProps<T>) {
   // Only one row can be expanded at a time
   const [expandedRowId, setExpandedRowId] = useState<string | number | null>(
     null
@@ -106,7 +106,7 @@ export default function AdminTable({
               </tr>
             ) : (
               data.map((row, index) => {
-                const rowId = row.id || index;
+                const rowId = (row as { id?: string | number }).id || index;
                 const isExpanded = expandedRowId === rowId;
                 const hiddenColumns = columns.filter(
                   (col) => col.hidden === "mobile" || col.hidden === "tablet"
@@ -137,12 +137,12 @@ export default function AdminTable({
 }
 
 // Separate component for expandable row with animation
-interface ExpandableRowProps {
-  row: any;
+interface ExpandableRowProps<T = unknown> {
+  row: T;
   rowId: string | number;
-  columns: TableColumn[];
-  hiddenColumns: TableColumn[];
-  actions?: TableAction[];
+  columns: TableColumn<T>[];
+  hiddenColumns: TableColumn<T>[];
+  actions?: TableAction<T>[];
   isExpanded: boolean;
   hasHiddenColumns: boolean;
   expandableOnMobile: boolean;
@@ -150,7 +150,7 @@ interface ExpandableRowProps {
   onRowClick: () => void;
 }
 
-function ExpandableRow({
+function ExpandableRow<T extends object>({
   row,
   rowId,
   columns,
@@ -161,12 +161,14 @@ function ExpandableRow({
   expandableOnMobile,
   getVisibilityClass,
   onRowClick,
-}: ExpandableRowProps) {
+}: ExpandableRowProps<T>) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
 
-  useEffect(() => {
+  // DOM measurement in useLayoutEffect is a valid pattern for animations
+  useLayoutEffect(() => {
     if (contentRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHeight(isExpanded ? contentRef.current.scrollHeight : 0);
     }
   }, [isExpanded]);
@@ -204,8 +206,11 @@ function ExpandableRow({
               )}
               <span className="truncate">
                 {column.render
-                  ? column.render(row[column.key], row)
-                  : row[column.key]}
+                  ? column.render(
+                      (row as Record<string, unknown>)[column.key],
+                      row
+                    )
+                  : ((row as Record<string, unknown>)[column.key] as ReactNode)}
               </span>
             </div>
           </td>
@@ -265,8 +270,13 @@ function ExpandableRow({
                       </span>
                       <span className="text-sm text-text-primary mt-0.5">
                         {column.render
-                          ? column.render(row[column.key], row)
-                          : row[column.key] || "-"}
+                          ? column.render(
+                              (row as Record<string, unknown>)[column.key],
+                              row
+                            )
+                          : ((row as Record<string, unknown>)[
+                              column.key
+                            ] as ReactNode) || "-"}
                       </span>
                     </div>
                   ))}
