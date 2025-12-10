@@ -32,11 +32,9 @@ export const useAuth = () => {
   ) => {
     const { data } = await registerUserMutation({
       variables: {
-        input: {
-          email,
-          password,
-          passwordConfirmation,
-        },
+        email,
+        password,
+        passwordConfirmation,
       },
     });
 
