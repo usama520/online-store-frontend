@@ -11,6 +11,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useQuery } from "@apollo/client";
+import { GET_STORE_SETTINGS } from "@/lib/graphql/queries";
+import { StoreSettings } from "@/lib/types";
 
 const navigationItems = [
   {
@@ -39,6 +42,12 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
+  const storeSettings = settingsData?.storeSettings as StoreSettings | null;
+  const storeName =
+    storeSettings?.storeName ||
+    process.env.NEXT_PUBLIC_STORE_NAME ||
+    "My Store";
 
   const handleClose = () => {
     onClose();
@@ -74,7 +83,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               S
             </div>
             <div className="hidden sm:block min-w-0">
-              <div className="text-white font-bold text-sm truncate">STORE</div>
+              <div className="text-white font-bold text-sm truncate">
+                {storeName}
+              </div>
               <div className="text-primary text-xs font-medium truncate">
                 Admin
               </div>

@@ -26,6 +26,18 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         `[GraphQL Error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
         extensions ? `Extensions: ${JSON.stringify(extensions, null, 2)}` : "",
       );
+
+      // Handle admin authorization error - clear tokens and redirect to login
+      if (message.startsWith("You must be an admin to")) {
+        if (typeof window !== "undefined") {
+          // Clear all auth-related storage
+          localStorage.removeItem("token");
+          localStorage.removeItem("auth-storage");
+
+          // Redirect to login page
+          window.location.href = "/login";
+        }
+      }
     });
   }
 

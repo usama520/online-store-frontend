@@ -124,7 +124,7 @@ export const UPDATE_PAYMENT_STATUS = gql`
 `;
 
 export const UPDATE_STORE_SETTINGS = gql`
-  mutation UpdateStoreSettings($input: StoreSettingsInputType!) {
+  mutation UpdateStoreSettings($input: StoreSettingsInput!) {
     updateStoreSettings(input: $input) {
       storeSettings {
         id
