@@ -1,14 +1,284 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Theme CSS Variables */
+:root,
+[data-theme="sage"] {
+  --color-primary: #22C55E;
+  --color-primary-hover: #16A34A;
+  --color-primary-light: #86EFAC;
+  --color-primary-dark: #14532D;
+  --color-primary-dark-end: #166534;
+
+  --color-accent: #F59E0B;
+  --color-accent-hover: #D97706;
+
+  --color-surface: #FEFDFB;
+  --color-surface-secondary: #F7F6F3;
+  --color-surface-card: #FFFFFF;
+
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #525252;
+  --color-text-muted: #A3A3A3;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-accent: #FFFFFF;
+
+  --color-border: #E5E5E5;
+  --color-border-light: #F5F5F5;
+
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+}
+
+[data-theme="neutral"] {
+  --color-primary: #78716C;
+  --color-primary-hover: #57534E;
+  --color-primary-light: #A8A29E;
+  --color-primary-dark: #1C1917;
+  --color-primary-dark-end: #292524;
+
+  --color-accent: #F59E0B;
+  --color-accent-hover: #D97706;
+
+  --color-surface: #FAFAF9;
+  --color-surface-secondary: #F5F5F4;
+  --color-surface-card: #FFFFFF;
+
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #57534E;
+  --color-text-muted: #A8A29E;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-accent: #FFFFFF;
+
+  --color-border: #E7E5E4;
+  --color-border-light: #F5F5F4;
+
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+}
+
+[data-theme="indigo"] {
+  --color-primary: #6366F1;
+  --color-primary-hover: #4F46E5;
+  --color-primary-light: #A5B4FC;
+  --color-primary-dark: #1E1B4B;
+  --color-primary-dark-end: #312E81;
+
+  --color-accent: #F43F5E;
+  --color-accent-hover: #E11D48;
+
+  --color-surface: #FAFAFA;
+  --color-surface-secondary: #F4F4F5;
+  --color-surface-card: #FFFFFF;
+
+  --color-text-primary: #18181B;
+  --color-text-secondary: #52525B;
+  --color-text-muted: #A1A1AA;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-accent: #FFFFFF;
+
+  --color-border: #E4E4E7;
+  --color-border-light: #F4F4F5;
+
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+}
+
+[data-theme="terracotta"] {
+  --color-primary: #EA580C;
+  --color-primary-hover: #C2410C;
+  --color-primary-light: #FDBA74;
+  --color-primary-dark: #431407;
+  --color-primary-dark-end: #7C2D12;
+
+  --color-accent: #14B8A6;
+  --color-accent-hover: #0D9488;
+
+  --color-surface: #FFFBF7;
+  --color-surface-secondary: #FEF7F0;
+  --color-surface-card: #FFFFFF;
+
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #57534E;
+  --color-text-muted: #A8A29E;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-accent: #FFFFFF;
+
+  --color-border: #E7E5E4;
+  --color-border-light: #F5F5F4;
+
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+}
 
 * {
   @apply transition-colors duration-200;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  @apply bg-content-bg text-text-primary;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  @apply bg-theme-surface text-theme-text antialiased;
+}
+
+/* Hero Section Bubble Animations */
+@keyframes bubble-float-1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  25% {
+    transform: translate(80px, -60px) scale(1.1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(120px, -20px) scale(0.95);
+    opacity: 0.2;
+  }
+  75% {
+    transform: translate(40px, 40px) scale(1.15);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+}
+
+@keyframes bubble-float-2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
+  }
+  20% {
+    transform: translate(-70px, -40px) scale(1.2);
+    opacity: 0.3;
+  }
+  40% {
+    transform: translate(-100px, 30px) scale(0.9);
+    opacity: 0.15;
+  }
+  60% {
+    transform: translate(-30px, 80px) scale(1.1);
+    opacity: 0.25;
+  }
+  80% {
+    transform: translate(50px, 20px) scale(1.05);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
+  }
+}
+
+@keyframes bubble-float-3 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.15;
+  }
+  33% {
+    transform: translate(-60px, -80px) scale(1.25);
+    opacity: 0.25;
+  }
+  66% {
+    transform: translate(70px, -30px) scale(0.85);
+    opacity: 0.18;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.15;
+  }
+}
+
+.hero-orb-1 {
+  animation: bubble-float-1 15s ease-in-out infinite;
+}
+
+.hero-orb-2 {
+  animation: bubble-float-2 20s ease-in-out infinite;
+}
+
+.hero-orb-3 {
+  animation: bubble-float-3 18s ease-in-out infinite;
+}
+
+/* Storefront Theme Components */
+@layer components {
+  /* Primary button - for main CTAs */
+  .btn-theme-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold
+           bg-theme-primary text-theme-text-on-primary
+           hover:bg-theme-primary-hover active:scale-[0.98]
+           transition-all duration-200 shadow-soft-sm hover:shadow-soft
+           focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2;
+  }
+
+  /* Accent button - for secondary CTAs */
+  .btn-theme-accent {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold
+           bg-theme-accent text-theme-text-on-accent
+           hover:bg-theme-accent-hover active:scale-[0.98]
+           transition-all duration-200 shadow-soft-sm hover:shadow-soft
+           focus:outline-none focus:ring-2 focus:ring-theme-accent focus:ring-offset-2;
+  }
+
+  /* Outline button */
+  .btn-theme-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold
+           bg-transparent text-theme-primary border-2 border-theme-primary
+           hover:bg-theme-primary hover:text-theme-text-on-primary active:scale-[0.98]
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-theme-primary focus:ring-offset-2;
+  }
+
+  /* Ghost button */
+  .btn-theme-ghost {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold
+           bg-transparent text-theme-text-secondary
+           hover:bg-theme-surface-secondary active:scale-[0.98]
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-theme-border focus:ring-offset-2;
+  }
+
+  /* Card component */
+  .card-theme {
+    @apply bg-theme-surface-card rounded-2xl shadow-soft border border-theme-border-light
+           transition-shadow duration-300;
+  }
+
+  .card-theme-hover {
+    @apply card-theme hover:shadow-soft-md hover:-translate-y-1 transition-all duration-300;
+  }
+
+  /* Input component */
+  .input-theme {
+    @apply w-full px-4 py-3 rounded-xl border border-theme-border bg-theme-surface-card
+           text-theme-text placeholder:text-theme-text-muted
+           focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-transparent
+           transition-all duration-200;
+  }
+
+  /* Container */
+  .container-theme {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section spacing */
+  .section-theme {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    @apply bg-theme-surface-secondary rounded animate-pulse;
+  }
 }
 
 /* Ziebart Admin Theme */

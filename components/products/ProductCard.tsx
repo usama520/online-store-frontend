@@ -14,44 +14,74 @@ export default function ProductCard({ product }: ProductCardProps) {
   const currencySymbol = settings?.currencySymbol || "Rs.";
 
   return (
-    <Link href={`/products/${product.id}`}>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
-        <div className="relative h-64 bg-gray-200 flex-shrink-0">
+    <Link href={`/products/${product.id}`} className="group block h-full">
+      <div className="bg-theme-surface-card rounded-2xl overflow-hidden h-full flex flex-col shadow-soft border border-theme-border-light hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300">
+        {/* Image Container */}
+        <div className="relative aspect-square bg-theme-surface-secondary overflow-hidden">
           {product.images[0] && (
             <Image
               src={imageUrl}
               alt={product.name}
               fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           )}
+
+          {/* Out of Stock Overlay */}
           {!product.inStock && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">Out of Stock</span>
+            <div className="absolute inset-0 bg-theme-text/60 backdrop-blur-sm flex items-center justify-center">
+              <span className="bg-theme-surface-card text-theme-text text-sm font-semibold px-4 py-2 rounded-full shadow-soft">
+                Out of Stock
+              </span>
             </div>
           )}
+
+          {/* Category Badge */}
+          {product.category && (
+            <div className="absolute top-3 left-3">
+              <span className="bg-theme-surface-card/90 backdrop-blur-sm text-theme-text-secondary text-xs font-medium px-3 py-1.5 rounded-full shadow-soft-sm">
+                {product.category.name}
+              </span>
+            </div>
+          )}
+
+          {/* Quick View Overlay - appears on hover */}
+          <div className="absolute inset-0 bg-theme-primary/0 group-hover:bg-theme-primary/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <span className="bg-theme-surface-card text-theme-text text-sm font-semibold px-4 py-2 rounded-full shadow-soft transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              View Details
+            </span>
+          </div>
         </div>
-        <div className="p-4 flex flex-col flex-grow">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">
+
+        {/* Content */}
+        <div className="p-4 sm:p-5 flex flex-col flex-grow">
+          {/* Product Name */}
+          <h3 className="text-base sm:text-lg font-semibold text-theme-text mb-2 line-clamp-2 group-hover:text-theme-primary transition-colors">
             {product.name}
           </h3>
-          <div className="flex-grow min-h-[3rem] mb-3">
+
+          {/* Description */}
+          <div className="flex-grow min-h-[2.5rem] mb-3">
             {product.description ? (
-              <p className="text-sm text-gray-600 line-clamp-2">
+              <p className="text-sm text-theme-text-secondary line-clamp-2">
                 {product.description}
               </p>
             ) : (
-              <div className="text-sm text-gray-400">No description</div>
+              <p className="text-sm text-theme-text-muted italic">
+                No description
+              </p>
             )}
           </div>
-          <div className="flex justify-between items-center mt-auto">
-            <span className="text-2xl font-bold text-blue-600">
+
+          {/* Price and Stock */}
+          <div className="flex items-center justify-between mt-auto pt-3 border-t border-theme-border-light">
+            <span className="text-xl sm:text-2xl font-bold text-theme-primary">
               {formatPrice(product.price, currencySymbol)}
             </span>
             {product.inStock && (
-              <span className="text-sm text-gray-500">
-                {product.stockQuantity} in stock
+              <span className="text-xs sm:text-sm text-theme-text-muted font-medium">
+                {product.stockQuantity} left
               </span>
             )}
           </div>

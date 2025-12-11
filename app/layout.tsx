@@ -3,6 +3,7 @@ import "./globals.css";
 import { ApolloProvider } from "@/lib/providers/ApolloProvider";
 import { ToastProvider } from "@/lib/providers/ToastProvider";
 import { ToastWrapper } from "@/components/ui/ToastWrapper";
+import { ThemeProvider } from "@/lib/providers/ThemeProvider";
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_STORE_NAME || "My Online Store",
@@ -17,11 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" data-theme="sage" suppressHydrationWarning>
+      <body className="antialiased">
         <ApolloProvider>
           <ToastProvider>
-            {children}
+            <ThemeProvider>{children}</ThemeProvider>
             <ToastWrapper />
           </ToastProvider>
         </ApolloProvider>
