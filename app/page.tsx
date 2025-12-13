@@ -19,8 +19,8 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-theme-primary-dark">
-        {/* Layered gradient for smooth blend */}
-        <div className="absolute inset-0 bg-gradient-to-br from-theme-primary-dark via-theme-primary to-theme-primary-light opacity-90" />
+        {/* Subtle gradient for smooth blend */}
+        <div className="absolute inset-0 bg-gradient-to-br from-theme-primary-dark to-theme-primary-dark-end opacity-95" />
 
         <Container className="relative py-16 sm:py-24 lg:py-32">
           <div className="max-w-3xl">
