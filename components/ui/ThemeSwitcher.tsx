@@ -23,8 +23,8 @@ export default function ThemeSwitcher() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 animate-slide-up">
-      <div className="bg-white/95 backdrop-blur-sm rounded-full shadow-soft-lg px-2 py-2 flex items-center gap-1 border border-theme-border">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 animate-slide-up pointer-events-none">
+      <div className="pointer-events-auto bg-white/95 backdrop-blur-sm rounded-full shadow-soft-lg px-2 py-2 flex items-center gap-1 border border-theme-border">
         {/* Theme label */}
         <span className="text-xs font-medium text-theme-text-secondary pl-3 pr-2 hidden sm:block">
           Theme:
