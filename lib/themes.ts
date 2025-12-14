@@ -444,4 +444,4 @@ export const themes: Record<ThemeId, Theme> = {
 
 export const themeIds = Object.keys(themes) as ThemeId[];
 
-export const defaultTheme: ThemeId = "sage";
+export const defaultTheme: ThemeId = "freshClean";

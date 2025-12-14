@@ -7,7 +7,17 @@ import { UPDATE_STORE_SETTINGS } from "@/lib/graphql/mutations";
 import { StoreSettings } from "@/lib/types";
 import { useToast } from "@/lib/hooks/useToast";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Store, Phone, Building2, Save } from "lucide-react";
+import {
+  Store,
+  Phone,
+  Building2,
+  Save,
+  Palette,
+  Check,
+  ShoppingCart,
+  Eye,
+} from "lucide-react";
+import { themes, themeIds, ThemeId, defaultTheme } from "@/lib/themes";
 
 export default function AdminSettingsPage() {
   const { data, refetch } = useQuery(GET_STORE_SETTINGS);
@@ -20,8 +30,7 @@ export default function AdminSettingsPage() {
 
   const [formData, setFormData] = useState({
     storeName: "",
-    primaryColor: "#3B82F6",
-    secondaryColor: "#10B981",
+    selectedTheme: defaultTheme as ThemeId,
     currencySymbol: "Rs.",
     bankAccountName: "",
     bankAccountNumber: "",
@@ -33,15 +42,18 @@ export default function AdminSettingsPage() {
   // Track if we've synced to prevent re-syncing
   const hasSynced = useRef(false);
 
+  // Get the selected theme config for preview
+  const selectedThemeConfig = themes[formData.selectedTheme];
+
   // Sync form data when storeSettings loads - this is syncing external data
   useEffect(() => {
     if (storeSettings && !hasSynced.current) {
       hasSynced.current = true;
+      const theme = (storeSettings.selectedTheme as ThemeId) || defaultTheme;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         storeName: storeSettings.storeName || "",
-        primaryColor: storeSettings.primaryColor || "#3B82F6",
-        secondaryColor: storeSettings.secondaryColor || "#10B981",
+        selectedTheme: theme,
         currencySymbol: storeSettings.currencySymbol || "Rs.",
         bankAccountName: storeSettings.bankAccountName || "",
         bankAccountNumber: storeSettings.bankAccountNumber || "",
@@ -103,62 +115,6 @@ export default function AdminSettingsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                  Primary Color
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={formData.primaryColor}
-                    onChange={(e) =>
-                      setFormData({ ...formData, primaryColor: e.target.value })
-                    }
-                    className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={formData.primaryColor}
-                    onChange={(e) =>
-                      setFormData({ ...formData, primaryColor: e.target.value })
-                    }
-                    className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white font-mono text-sm"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                  Secondary Color
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={formData.secondaryColor}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        secondaryColor: e.target.value,
-                      })
-                    }
-                    className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={formData.secondaryColor}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        secondaryColor: e.target.value,
-                      })
-                    }
-                    className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white font-mono text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Currency Symbol *
@@ -177,6 +133,246 @@ export default function AdminSettingsPage() {
               <p className="text-xs text-text-muted mt-1.5">
                 This symbol will be displayed before all prices (e.g., Rs.
                 99.99)
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Theme Selection */}
+        <div className="stat-card">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-icon-purple/10 rounded-lg">
+              <Palette className="w-5 h-5 text-icon-purple" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-text-primary">
+                Store Theme
+              </h2>
+              <p className="text-sm text-text-muted">
+                Choose a color theme for your store. Preview updates instantly.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {/* Theme Grid */}
+            <div>
+              <h3 className="text-sm font-medium text-text-secondary mb-3">
+                Available Themes
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {themeIds.map((themeId) => {
+                  const themeConfig = themes[themeId];
+                  const isSelected = formData.selectedTheme === themeId;
+
+                  return (
+                    <button
+                      key={themeId}
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, selectedTheme: themeId })
+                      }
+                      className={`
+                        relative p-3 rounded-xl border-2 transition-all duration-200
+                        hover:shadow-md hover:scale-[1.02]
+                        ${
+                          isSelected
+                            ? "border-blue-500 ring-2 ring-blue-500/20 shadow-md"
+                            : "border-gray-200 hover:border-gray-300"
+                        }
+                      `}
+                    >
+                      {/* Selected indicator */}
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+
+                      {/* Theme preview colors */}
+                      <div className="flex gap-1 mb-2">
+                        <div
+                          className="w-6 h-6 rounded-full shadow-sm border border-black/5"
+                          style={{
+                            backgroundColor: themeConfig.colors.primary,
+                          }}
+                          title="Primary color"
+                        />
+                        <div
+                          className="w-6 h-6 rounded-full shadow-sm border border-black/5"
+                          style={{ backgroundColor: themeConfig.colors.accent }}
+                          title="Accent color"
+                        />
+                        <div
+                          className="w-6 h-6 rounded-full shadow-sm border border-black/10"
+                          style={{
+                            backgroundColor: themeConfig.colors.surface,
+                          }}
+                          title="Background color"
+                        />
+                      </div>
+
+                      {/* Theme info */}
+                      <div className="text-left">
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm">{themeConfig.emoji}</span>
+                          <span className="font-medium text-xs text-text-primary truncate">
+                            {themeConfig.name}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Live Preview */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Eye className="w-4 h-4 text-text-secondary" />
+                <h3 className="text-sm font-medium text-text-secondary">
+                  Live Preview
+                </h3>
+              </div>
+              <div
+                className="rounded-xl border border-gray-200 overflow-hidden shadow-lg"
+                style={{
+                  backgroundColor: selectedThemeConfig.colors.surface,
+                }}
+              >
+                {/* Mock Header */}
+                <div
+                  className="px-4 py-3 flex items-center justify-between"
+                  style={{
+                    backgroundColor:
+                      selectedThemeConfig.colors.surfaceSecondary,
+                    borderBottom: `1px solid ${selectedThemeConfig.colors.border}`,
+                  }}
+                >
+                  <span
+                    className="font-bold text-sm"
+                    style={{ color: selectedThemeConfig.colors.textPrimary }}
+                  >
+                    {formData.storeName || "My Store"}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="text-xs"
+                      style={{ color: selectedThemeConfig.colors.textSecondary }}
+                    >
+                      Products
+                    </span>
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{
+                        backgroundColor: selectedThemeConfig.colors.primary,
+                      }}
+                    >
+                      <ShoppingCart className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mock Hero */}
+                <div
+                  className="px-4 py-6 text-center"
+                  style={{
+                    backgroundColor: selectedThemeConfig.colors.surface,
+                  }}
+                >
+                  <h2
+                    className="text-lg font-bold mb-1"
+                    style={{ color: selectedThemeConfig.colors.textPrimary }}
+                  >
+                    Welcome to Our Store
+                  </h2>
+                  <p
+                    className="text-xs mb-3"
+                    style={{ color: selectedThemeConfig.colors.textSecondary }}
+                  >
+                    Discover amazing products
+                  </p>
+                  <button
+                    className="px-4 py-1.5 rounded-lg text-xs font-medium text-white"
+                    style={{
+                      backgroundColor: selectedThemeConfig.colors.primary,
+                    }}
+                  >
+                    Shop Now
+                  </button>
+                </div>
+
+                {/* Mock Products */}
+                <div
+                  className="px-4 py-4 grid grid-cols-2 gap-3"
+                  style={{
+                    backgroundColor:
+                      selectedThemeConfig.colors.surfaceSecondary,
+                  }}
+                >
+                  {[1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg p-3"
+                      style={{
+                        backgroundColor: selectedThemeConfig.colors.surfaceCard,
+                        border: `1px solid ${selectedThemeConfig.colors.borderLight}`,
+                      }}
+                    >
+                      <div
+                        className="w-full h-12 rounded mb-2"
+                        style={{
+                          backgroundColor:
+                            selectedThemeConfig.colors.surfaceSecondary,
+                        }}
+                      />
+                      <div
+                        className="text-xs font-medium mb-1"
+                        style={{
+                          color: selectedThemeConfig.colors.textPrimary,
+                        }}
+                      >
+                        Product {i}
+                      </div>
+                      <div
+                        className="text-xs font-bold"
+                        style={{ color: selectedThemeConfig.colors.primary }}
+                      >
+                        {formData.currencySymbol} 99.00
+                      </div>
+                      <button
+                        className="w-full mt-2 py-1 rounded text-xs font-medium text-white"
+                        style={{
+                          backgroundColor: selectedThemeConfig.colors.accent,
+                        }}
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mock Footer */}
+                <div
+                  className="px-4 py-2 text-center"
+                  style={{
+                    backgroundColor: selectedThemeConfig.colors.textPrimary,
+                  }}
+                >
+                  <span
+                    className="text-xs"
+                    style={{
+                      color: selectedThemeConfig.colors.surfaceSecondary,
+                    }}
+                  >
+                    © {formData.storeName || "My Store"}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-text-muted mt-2 text-center">
+                {selectedThemeConfig.emoji} {selectedThemeConfig.name} —{" "}
+                {selectedThemeConfig.description}
               </p>
             </div>
           </div>

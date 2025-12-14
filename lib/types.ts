@@ -52,8 +52,7 @@ export interface StoreSettings {
   id: string;
   storeName: string;
   logoUrl?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
+  selectedTheme?: string;
   currencySymbol: string;
   bankAccountName?: string;
   bankAccountNumber?: string;

@@ -56,8 +56,7 @@ export const GET_STORE_SETTINGS = gql`
       id
       storeName
       logoUrl
-      primaryColor
-      secondaryColor
+      selectedTheme
       currencySymbol
       bankAccountName
       bankAccountNumber

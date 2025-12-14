@@ -129,8 +129,7 @@ export const UPDATE_STORE_SETTINGS = gql`
       storeSettings {
         id
         storeName
-        primaryColor
-        secondaryColor
+        selectedTheme
         currencySymbol
         bankAccountName
         bankAccountNumber

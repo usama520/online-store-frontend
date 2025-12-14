@@ -1,30 +1,44 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { useThemeStore } from "@/lib/zustand/themeStore";
-import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
+import { useEffect, useState } from "react";
+import { useQuery } from "@apollo/client";
+import { GET_STORE_SETTINGS } from "@/lib/graphql/queries";
+import { defaultTheme, ThemeId, themeIds } from "@/lib/themes";
+import { StoreSettings } from "@/lib/types";
 
 interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const { theme, hasHydrated } = useThemeStore();
-  const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith("/admin");
+  const { data, loading } = useQuery(GET_STORE_SETTINGS);
+  const [hasApplied, setHasApplied] = useState(false);
 
-  // Apply theme to document on mount and when theme changes
+  // Get theme from API response, fallback to defaultTheme
+  const storeSettings = data?.storeSettings as StoreSettings | null;
+  const selectedTheme = storeSettings?.selectedTheme as ThemeId | undefined;
+  const theme =
+    selectedTheme && themeIds.includes(selectedTheme)
+      ? selectedTheme
+      : defaultTheme;
+
+  // Apply theme to document when data loads
   useEffect(() => {
-    if (hasHydrated) {
+    if (!loading && !hasApplied) {
+      document.documentElement.setAttribute("data-theme", theme);
+      setHasApplied(true);
+    } else if (hasApplied) {
+      // Update theme if it changes after initial load
       document.documentElement.setAttribute("data-theme", theme);
     }
-  }, [theme, hasHydrated]);
+  }, [theme, loading, hasApplied]);
 
-  return (
-    <>
-      {children}
-      {!isAdminRoute && <ThemeSwitcher />}
-    </>
-  );
+  // Apply default theme immediately on mount to prevent flash
+  useEffect(() => {
+    if (!hasApplied) {
+      document.documentElement.setAttribute("data-theme", defaultTheme);
+    }
+  }, [hasApplied]);
+
+  return <>{children}</>;
 }
