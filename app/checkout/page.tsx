@@ -41,7 +41,7 @@ export default function CheckoutPage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -84,32 +84,32 @@ export default function CheckoutPage() {
         showError("Something went wrong");
       } else {
         showError(
-          error instanceof Error ? error.message : "Failed to place order",
+          error instanceof Error ? error.message : "Failed to place order"
         );
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-theme-surface">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">Checkout</h1>
+        <h1 className="text-4xl font-bold text-theme-text mb-8">Checkout</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Checkout Form */}
             <div className="lg:col-span-2 space-y-6">
               {/* Customer Information */}
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              <div className="bg-theme-surface-card rounded-lg shadow-md p-6">
+                <h2 className="text-2xl font-bold text-theme-text mb-6">
                   Customer Information
                 </h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-theme-text-secondary mb-1">
                       Full Name *
                     </label>
                     <input
@@ -117,17 +117,21 @@ export default function CheckoutPage() {
                       name="customerName"
                       value={formData.customerName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border ${errors.customerName ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
+                      className={`input-theme ${
+                        errors.customerName
+                          ? "!border-theme-error focus:!ring-theme-error"
+                          : ""
+                      }`}
                     />
                     {errors.customerName && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-theme-error text-sm mt-1">
                         {errors.customerName}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-theme-text-secondary mb-1">
                       Email *
                     </label>
                     <input
@@ -135,17 +139,21 @@ export default function CheckoutPage() {
                       name="customerEmail"
                       value={formData.customerEmail}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border ${errors.customerEmail ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
+                      className={`input-theme ${
+                        errors.customerEmail
+                          ? "!border-theme-error focus:!ring-theme-error"
+                          : ""
+                      }`}
                     />
                     {errors.customerEmail && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-theme-error text-sm mt-1">
                         {errors.customerEmail}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-theme-text-secondary mb-1">
                       Phone *
                     </label>
                     <input
@@ -153,17 +161,21 @@ export default function CheckoutPage() {
                       name="customerPhone"
                       value={formData.customerPhone}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border ${errors.customerPhone ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
+                      className={`input-theme ${
+                        errors.customerPhone
+                          ? "!border-theme-error focus:!ring-theme-error"
+                          : ""
+                      }`}
                     />
                     {errors.customerPhone && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-theme-error text-sm mt-1">
                         {errors.customerPhone}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-theme-text-secondary mb-1">
                       Street Address *
                     </label>
                     <input
@@ -172,10 +184,14 @@ export default function CheckoutPage() {
                       value={formData.streetAddress}
                       onChange={handleChange}
                       placeholder="House/Flat #, Street name"
-                      className={`w-full px-4 py-2 border ${errors.streetAddress ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
+                      className={`input-theme ${
+                        errors.streetAddress
+                          ? "!border-theme-error focus:!ring-theme-error"
+                          : ""
+                      }`}
                     />
                     {errors.streetAddress && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-theme-error text-sm mt-1">
                         {errors.streetAddress}
                       </p>
                     )}
@@ -183,7 +199,7 @@ export default function CheckoutPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-theme-text-secondary mb-1">
                         City *
                       </label>
                       <input
@@ -191,17 +207,21 @@ export default function CheckoutPage() {
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2 border ${errors.city ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900`}
+                        className={`input-theme ${
+                          errors.city
+                            ? "!border-theme-error focus:!ring-theme-error"
+                            : ""
+                        }`}
                       />
                       {errors.city && (
-                        <p className="text-red-500 text-sm mt-1">
+                        <p className="text-theme-error text-sm mt-1">
                           {errors.city}
                         </p>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-theme-text-secondary mb-1">
                         Postal Code (Optional)
                       </label>
                       <input
@@ -209,7 +229,7 @@ export default function CheckoutPage() {
                         name="postalCode"
                         value={formData.postalCode}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                        className="input-theme"
                       />
                     </div>
                   </div>
@@ -217,13 +237,13 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment Method */}
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              <div className="bg-theme-surface-card rounded-lg shadow-md p-6">
+                <h2 className="text-2xl font-bold text-theme-text mb-6">
                   Payment Method
                 </h2>
 
                 <div className="space-y-3">
-                  <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500">
+                  <label className="flex items-start p-4 border-2 border-theme-border-light rounded-lg cursor-pointer hover:border-theme-primary">
                     <input
                       type="radio"
                       name="paymentMethod"
@@ -233,16 +253,16 @@ export default function CheckoutPage() {
                       className="mt-1"
                     />
                     <div className="ml-3">
-                      <div className="font-semibold text-gray-800">
+                      <div className="font-semibold text-theme-text">
                         Cash on Delivery
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-theme-text-secondary">
                         Pay when you receive your order
                       </div>
                     </div>
                   </label>
 
-                  <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500">
+                  <label className="flex items-start p-4 border-2 border-theme-border-light rounded-lg cursor-pointer hover:border-theme-primary">
                     <input
                       type="radio"
                       name="paymentMethod"
@@ -252,10 +272,10 @@ export default function CheckoutPage() {
                       className="mt-1"
                     />
                     <div className="ml-3">
-                      <div className="font-semibold text-gray-800">
+                      <div className="font-semibold text-theme-text">
                         Bank Transfer
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-theme-text-secondary">
                         Transfer to our bank account
                       </div>
                     </div>
@@ -264,11 +284,11 @@ export default function CheckoutPage() {
 
                 {formData.paymentMethod === "bank_transfer" &&
                   storeSettings && (
-                    <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <h3 className="font-semibold text-gray-800 mb-2">
+                    <div className="mt-4 p-4 bg-theme-primary/10 border border-theme-primary/30 rounded-lg">
+                      <h3 className="font-semibold text-theme-text mb-2">
                         Bank Account Details
                       </h3>
-                      <div className="space-y-1 text-sm text-gray-700">
+                      <div className="space-y-1 text-sm text-theme-text-secondary">
                         {storeSettings.bankName && (
                           <p>
                             <span className="font-medium">Bank:</span>{" "}
@@ -288,7 +308,7 @@ export default function CheckoutPage() {
                           </p>
                         )}
                       </div>
-                      <p className="mt-2 text-sm text-gray-600">
+                      <p className="mt-2 text-sm text-theme-text-secondary">
                         Please transfer the amount and we&apos;ll confirm your
                         order once payment is received.
                       </p>
@@ -299,8 +319,8 @@ export default function CheckoutPage() {
 
             {/* Order Summary */}
             <div>
-              <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              <div className="bg-theme-surface-card rounded-lg shadow-md p-6 sticky top-4">
+                <h2 className="text-2xl font-bold text-theme-text mb-6">
                   Order Summary
                 </h2>
 
@@ -310,21 +330,21 @@ export default function CheckoutPage() {
                       key={item.productId}
                       className="flex justify-between text-sm"
                     >
-                      <span className="text-gray-600">
+                      <span className="text-theme-text-secondary">
                         {item.name} x {item.quantity}
                       </span>
-                      <span className="font-medium text-gray-800">
+                      <span className="font-medium text-theme-text">
                         {formatPrice(
                           item.price * item.quantity,
-                          currencySymbol,
+                          currencySymbol
                         )}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t pt-4 space-y-2 mb-6">
-                  <div className="flex justify-between text-xl font-bold text-gray-800">
+                <div className="border-t border-theme-border-light pt-4 space-y-2 mb-6">
+                  <div className="flex justify-between text-xl font-bold text-theme-text">
                     <span>Total</span>
                     <span>{formatPrice(total, currencySymbol)}</span>
                   </div>
@@ -333,7 +353,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full btn-theme-primary disabled:bg-theme-surface-secondary disabled:text-theme-text-muted disabled:cursor-not-allowed"
                 >
                   {loading ? "Placing Order..." : "Place Order"}
                 </button>

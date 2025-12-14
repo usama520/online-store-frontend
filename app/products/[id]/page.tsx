@@ -27,11 +27,11 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-theme-surface">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading product...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary"></div>
+          <p className="mt-4 text-theme-text-secondary">Loading product...</p>
         </div>
       </div>
     );
@@ -39,10 +39,10 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-theme-surface">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-theme-text">
             Product not found
           </h1>
         </div>
@@ -75,7 +75,7 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-theme-surface">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -85,7 +85,7 @@ export default function ProductDetailPage() {
             <button
               type="button"
               onClick={() => setIsLightboxOpen(true)}
-              className="relative h-96 bg-gray-200 rounded-lg overflow-hidden mb-4 w-full group"
+              className="relative h-96 bg-theme-surface-secondary rounded-lg overflow-hidden mb-4 w-full group"
             >
               {product.images[selectedImage] ? (
                 <>
@@ -93,6 +93,7 @@ export default function ProductDetailPage() {
                     src={product.images[selectedImage]}
                     alt={product.name}
                     fill
+                    unoptimized
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
@@ -117,13 +118,14 @@ export default function ProductDetailPage() {
                     type="button"
                     onClick={() => setSelectedImage(idx)}
                     className={`relative h-20 rounded-lg overflow-hidden ${
-                      selectedImage === idx ? "ring-2 ring-blue-600" : ""
+                      selectedImage === idx ? "ring-2 ring-theme-primary" : ""
                     }`}
                   >
                     <Image
                       src={img}
                       alt={`${product.name} ${idx + 1}`}
                       fill
+                      unoptimized
                       className="object-cover"
                       sizes="80px"
                     />
@@ -135,33 +137,35 @@ export default function ProductDetailPage() {
 
           {/* Product Info */}
           <div>
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            <h1 className="text-4xl font-bold text-theme-text mb-4">
               {product.name}
             </h1>
 
             {product.category && (
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-theme-text-muted mb-4">
                 Category: {product.category.name}
               </p>
             )}
 
-            <div className="text-4xl font-bold text-blue-600 mb-6">
+            <div className="text-4xl font-bold text-theme-primary mb-6">
               {formatPrice(product.price, currencySymbol)}
             </div>
 
             {product.description && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-2">Description</h2>
-                <p className="text-gray-600">{product.description}</p>
+                <p className="text-theme-text-secondary">
+                  {product.description}
+                </p>
               </div>
             )}
 
             <div className="mb-6">
-              <p className="text-gray-600">
+              <p className="text-theme-text-secondary">
                 <span className="font-semibold">SKU:</span>{" "}
                 {product.sku || "N/A"}
               </p>
-              <p className="text-gray-600">
+              <p className="text-theme-text-secondary">
                 <span className="font-semibold">Stock:</span>{" "}
                 {product.inStock
                   ? `${product.stockQuantity} available`
@@ -172,7 +176,7 @@ export default function ProductDetailPage() {
             {product.inStock && (
               <>
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                     Quantity
                   </label>
                   <input
@@ -186,25 +190,25 @@ export default function ProductDetailPage() {
                           1,
                           Math.min(
                             product.stockQuantity,
-                            parseInt(e.target.value) || 1,
-                          ),
-                        ),
+                            parseInt(e.target.value) || 1
+                          )
+                        )
                       )
                     }
-                    className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-24 px-3 py-2 border border-theme-border rounded-md focus:ring-2 focus:ring-theme-primary text-theme-text bg-theme-surface-card"
                   />
                 </div>
 
                 <div className="flex gap-4">
                   <button
                     onClick={handleAddToCart}
-                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                    className="flex-1 btn-theme-primary"
                   >
                     Add to Cart
                   </button>
                   <button
                     onClick={handleBuyNow}
-                    className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                    className="flex-1 bg-theme-accent text-theme-text-on-accent px-6 py-3 rounded-lg font-semibold hover:bg-theme-accent-hover transition-colors"
                   >
                     Buy Now
                   </button>

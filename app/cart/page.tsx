@@ -26,11 +26,11 @@ export default function CartPage() {
   // Don't access store values until mounted to prevent hydration mismatch
   if (!isMounted) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-theme-surface">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading cart...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary"></div>
+          <p className="mt-4 text-theme-text-secondary">Loading cart...</p>
         </div>
       </div>
     );
@@ -42,18 +42,18 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-theme-surface">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          <h1 className="text-3xl font-bold text-theme-text mb-4">
             Your Cart is Empty
           </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="text-theme-text-secondary mb-8">
             Add some products to get started!
           </p>
           <button
             onClick={() => router.push("/products")}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="btn-theme-primary"
           >
             Continue Shopping
           </button>
@@ -63,33 +63,36 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-theme-surface">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">Shopping Cart</h1>
+        <h1 className="text-4xl font-bold text-theme-text mb-8">
+          Shopping Cart
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-theme-surface-card rounded-lg shadow-md p-6">
               {items.map((item) => (
                 <div
                   key={item.productId}
                   className="flex items-center gap-4 py-4 border-b last:border-b-0"
                 >
                   {/* Image */}
-                  <div className="relative w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="relative w-24 h-24 bg-theme-surface-secondary rounded-lg overflow-hidden flex-shrink-0">
                     {item.image ? (
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
+                        unoptimized
                         className="object-cover"
                         sizes="96px"
                       />
                     ) : (
-                      <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                      <div className="flex items-center justify-center h-full text-theme-text-muted text-sm">
                         No image
                       </div>
                     )}
@@ -97,8 +100,10 @@ export default function CartPage() {
 
                   {/* Details */}
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                    <p className="text-blue-600 font-bold">
+                    <h3 className="font-semibold text-theme-text">
+                      {item.name}
+                    </h3>
+                    <p className="text-theme-primary font-bold">
                       {formatPrice(item.price, currencySymbol)}
                     </p>
                   </div>
@@ -109,19 +114,19 @@ export default function CartPage() {
                       onClick={() =>
                         updateQuantity(item.productId, item.quantity - 1)
                       }
-                      className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                      className="w-8 h-8 rounded bg-theme-primary hover:bg-theme-primary-hover text-theme-text-on-primary flex items-center justify-center disabled:bg-theme-surface-secondary disabled:text-theme-text-muted disabled:cursor-not-allowed transition-colors"
                       disabled={item.quantity <= 1}
                     >
                       -
                     </button>
-                    <span className="w-12 text-center font-medium text-gray-900">
+                    <span className="w-12 text-center font-medium text-theme-text">
                       {item.quantity}
                     </span>
                     <button
                       onClick={() =>
                         updateQuantity(item.productId, item.quantity + 1)
                       }
-                      className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                      className="w-8 h-8 rounded bg-theme-primary hover:bg-theme-primary-hover text-theme-text-on-primary flex items-center justify-center disabled:bg-theme-surface-secondary disabled:text-theme-text-muted disabled:cursor-not-allowed transition-colors"
                       disabled={item.quantity >= item.stockQuantity}
                     >
                       +
@@ -129,14 +134,14 @@ export default function CartPage() {
                   </div>
 
                   {/* Subtotal */}
-                  <div className="text-right font-semibold text-gray-800 w-24">
+                  <div className="text-right font-semibold text-theme-text w-24">
                     {formatPrice(item.price * item.quantity, currencySymbol)}
                   </div>
 
                   {/* Remove */}
                   <button
                     onClick={() => removeItem(item.productId)}
-                    className="text-red-600 hover:text-red-700 p-2"
+                    className="text-theme-error hover:opacity-80 p-2"
                   >
                     <svg
                       className="w-5 h-5"
@@ -158,7 +163,7 @@ export default function CartPage() {
               <div className="mt-6">
                 <button
                   onClick={clearCart}
-                  className="text-red-600 hover:text-red-700 font-medium"
+                  className="text-theme-error hover:opacity-80 font-medium"
                 >
                   Clear Cart
                 </button>
@@ -168,21 +173,21 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div>
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            <div className="bg-theme-surface-card rounded-lg shadow-md p-6 sticky top-4">
+              <h2 className="text-2xl font-bold text-theme-text mb-6">
                 Order Summary
               </h2>
 
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-theme-text-secondary">
                   <span>Subtotal</span>
                   <span>{formatPrice(total, currencySymbol)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-theme-text-secondary">
                   <span>Shipping</span>
                   <span>Calculated at checkout</span>
                 </div>
-                <div className="border-t pt-3 flex justify-between text-xl font-bold text-gray-800">
+                <div className="border-t border-theme-border-light pt-3 flex justify-between text-xl font-bold text-theme-text">
                   <span>Total</span>
                   <span>{formatPrice(total, currencySymbol)}</span>
                 </div>
@@ -190,14 +195,14 @@ export default function CartPage() {
 
               <button
                 onClick={() => router.push("/checkout")}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-3"
+                className="w-full btn-theme-primary mb-3"
               >
                 Proceed to Checkout
               </button>
 
               <button
                 onClick={() => router.push("/products")}
-                className="w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                className="w-full btn-theme-secondary"
               >
                 Continue Shopping
               </button>

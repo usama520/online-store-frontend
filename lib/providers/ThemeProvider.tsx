@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useThemeStore } from "@/lib/zustand/themeStore";
 import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
@@ -10,6 +11,8 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const { theme, hasHydrated } = useThemeStore();
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin");
 
   // Apply theme to document on mount and when theme changes
   useEffect(() => {
@@ -21,7 +24,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   return (
     <>
       {children}
-      <ThemeSwitcher />
+      {!isAdminRoute && <ThemeSwitcher />}
     </>
   );
 }

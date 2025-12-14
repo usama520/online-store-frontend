@@ -37,7 +37,7 @@ export default function SignupPage() {
       await registerUser(
         formData.email,
         formData.password,
-        formData.passwordConfirmation,
+        formData.passwordConfirmation
       );
       router.push("/");
     } catch (err) {
@@ -48,21 +48,21 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+    <div className="min-h-screen bg-theme-surface flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-theme-surface-card rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-theme-text mb-6 text-center">
           Create Account
         </h1>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-theme-error/10 border border-theme-error/30 text-theme-error rounded">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-theme-text-secondary mb-1">
               Email
             </label>
             <input
@@ -72,12 +72,12 @@ export default function SignupPage() {
                 setFormData({ ...formData, email: e.target.value })
               }
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              className="input-theme"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-theme-text-secondary mb-1">
               Password
             </label>
             <input
@@ -88,15 +88,15 @@ export default function SignupPage() {
               }
               required
               minLength={6}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              className="input-theme"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-theme-text-muted">
               Must be at least 6 characters
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-theme-text-secondary mb-1">
               Confirm Password
             </label>
             <input
@@ -110,24 +110,24 @@ export default function SignupPage() {
               }
               required
               minLength={6}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              className="input-theme"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full btn-theme-primary disabled:bg-theme-surface-secondary disabled:text-theme-text-muted disabled:cursor-not-allowed"
           >
             {loading ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-theme-text-secondary">
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-blue-600 hover:text-blue-700 font-semibold"
+            className="text-theme-primary hover:text-theme-primary-hover font-semibold"
           >
             Login
           </Link>
