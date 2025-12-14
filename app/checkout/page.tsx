@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/zustand/cartStore";
 import { useCheckout } from "@/lib/hooks/useCheckout";
@@ -32,9 +32,15 @@ export default function CheckoutPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const total = getTotalPrice();
+  const isCheckingOut = useRef(false);
+
+  useEffect(() => {
+    if (items.length === 0 && !isCheckingOut.current) {
+      router.push("/cart");
+    }
+  }, [items.length, router]);
 
   if (items.length === 0) {
-    router.push("/cart");
     return null;
   }
 
@@ -77,6 +83,7 @@ export default function CheckoutPage() {
     if (!validate()) return;
 
     try {
+      isCheckingOut.current = true;
       await checkout(formData);
     } catch (error) {
       if (error instanceof ApolloError) {
