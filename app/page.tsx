@@ -1,6 +1,7 @@
 "use client";
 
 import { useProducts } from "@/lib/hooks/useProducts";
+import { useStoreName } from "@/lib/hooks/useStoreName";
 import ProductGrid from "@/components/products/ProductGrid";
 import Navbar from "@/components/ui/Navbar";
 import Container from "@/components/ui/Container";
@@ -9,6 +10,7 @@ import Link from "next/link";
 
 export default function Home() {
   const { products, loading } = useProducts();
+  const storeName = useStoreName();
 
   // Show first 8 products on home page
   const featuredProducts = products.slice(0, 8);
@@ -33,9 +35,7 @@ export default function Home() {
             {/* Heading */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-slide-up">
               Welcome to{" "}
-              <span className="text-theme-primary-light">
-                {process.env.NEXT_PUBLIC_STORE_NAME || "Our Store"}
-              </span>
+              <span className="text-theme-primary-light">{storeName}</span>
             </h1>
 
             {/* Description */}

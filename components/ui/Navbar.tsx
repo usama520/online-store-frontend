@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/zustand/cartStore";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useStoreName } from "@/lib/hooks/useStoreName";
 
 // Subscribe returns a no-op unsubscribe
 const emptySubscribe = () => () => {};
@@ -13,6 +14,7 @@ export default function Navbar() {
   const { getTotalItems } = useCartStore();
   const { isAuthenticated, user, isAdmin, logout, hasHydrated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const storeName = useStoreName();
 
   // Track hydration without useEffect + setState
   const isMounted = useSyncExternalStore(
@@ -68,7 +70,7 @@ export default function Navbar() {
                 href="/"
                 className="text-xl sm:text-2xl font-bold text-theme-primary tracking-tight"
               >
-                {process.env.NEXT_PUBLIC_STORE_NAME || "My Store"}
+                {storeName}
               </Link>
 
               {/* Desktop Navigation */}
