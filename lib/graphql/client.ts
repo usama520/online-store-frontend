@@ -27,16 +27,21 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         extensions ? `Extensions: ${JSON.stringify(extensions, null, 2)}` : "",
       );
 
-      // Handle admin authorization error - clear tokens and redirect to login
+      // Handle admin authorization error - only redirect when on admin routes
       if (message.startsWith("You must be an admin to")) {
         console.log('Admin authorization error detected:', message);
         if (typeof window !== "undefined") {
-          // Clear all auth-related storage
-          localStorage.removeItem("token");
-          localStorage.removeItem("auth-storage");
+          const isAdminRoute = window.location.pathname.startsWith("/admin");
+          
+          // Only clear tokens and redirect for admin routes
+          if (isAdminRoute) {
+            // Clear all auth-related storage
+            localStorage.removeItem("token");
+            localStorage.removeItem("auth-storage");
 
-          // Redirect to login page
-          window.location.href = "/login";
+            // Redirect to admin login page
+            window.location.href = "/admin/login";
+          }
         }
       }
     });

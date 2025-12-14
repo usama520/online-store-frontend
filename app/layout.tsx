@@ -17,8 +17,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Inline script to apply cached theme before hydration (prevents flash)
+  const themeScript = `
+    (function() {
+      try {
+        var validThemes = ["neutral", "sage", "indigo", "terracotta", "rose", "sky", "lavender", "mint", "warmWelcoming", "freshClean", "elegantSophisticated", "calmTrustworthy"];
+        var cached = localStorage.getItem("store-theme");
+        if (cached && validThemes.indexOf(cached) !== -1) {
+          document.documentElement.setAttribute("data-theme", cached);
+        }
+      } catch (e) {}
+    })();
+  `;
+
   return (
-    <html lang="en" data-theme="sage" suppressHydrationWarning>
+    <html lang="en" data-theme="freshClean" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="antialiased">
         <ApolloProvider>
           <ToastProvider>
