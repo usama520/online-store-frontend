@@ -38,8 +38,13 @@ export const useCheckout = () => {
     }
 
     const order = result.createOrder.order;
+    const accessToken = result.createOrder.accessToken;
     clearCart();
-    router.push(`/orders/${order.id}`);
+    if (accessToken) {
+      router.push(`/orders/${order.id}?token=${accessToken}`);
+    } else {
+      router.push(`/orders/${order.id}`);
+    }
 
     return order;
   };

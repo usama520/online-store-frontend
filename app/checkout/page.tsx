@@ -269,55 +269,71 @@ export default function CheckoutPage() {
                     </div>
                   </label>
 
-                  <label className="flex items-start p-4 border-2 border-theme-border-light rounded-lg cursor-pointer hover:border-theme-primary">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="bank_transfer"
-                      checked={formData.paymentMethod === "bank_transfer"}
-                      onChange={handleChange}
-                      className="mt-1"
-                    />
-                    <div className="ml-3">
-                      <div className="font-semibold text-theme-text">
-                        Bank Transfer
-                      </div>
-                      <div className="text-sm text-theme-text-secondary">
-                        Transfer to our bank account
-                      </div>
-                    </div>
-                  </label>
+
+
+                  {storeSettings?.bankAccounts &&
+                    storeSettings.bankAccounts.some((acc) => acc.isActive) && (
+                      <label className="flex items-start p-4 border-2 border-theme-border-light rounded-lg cursor-pointer hover:border-theme-primary">
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="bank_transfer"
+                          checked={formData.paymentMethod === "bank_transfer"}
+                          onChange={handleChange}
+                          className="mt-1"
+                        />
+                        <div className="ml-3">
+                          <div className="font-semibold text-theme-text">
+                            Bank Transfer
+                          </div>
+                          <div className="text-sm text-theme-text-secondary">
+                            Transfer to our bank account
+                          </div>
+                        </div>
+                      </label>
+                    )}
                 </div>
 
                 {formData.paymentMethod === "bank_transfer" &&
-                  storeSettings && (
+                  storeSettings?.bankAccounts && (
                     <div className="mt-4 p-4 bg-theme-primary/10 border border-theme-primary/30 rounded-lg">
-                      <h3 className="font-semibold text-theme-text mb-2">
+                      <h3 className="font-semibold text-theme-text mb-3">
                         Bank Account Details
                       </h3>
-                      <div className="space-y-1 text-sm text-theme-text-secondary">
-                        {storeSettings.bankName && (
-                          <p>
-                            <span className="font-medium">Bank:</span>{" "}
-                            {storeSettings.bankName}
-                          </p>
-                        )}
-                        {storeSettings.bankAccountName && (
-                          <p>
-                            <span className="font-medium">Account Name:</span>{" "}
-                            {storeSettings.bankAccountName}
-                          </p>
-                        )}
-                        {storeSettings.bankAccountNumber && (
-                          <p>
-                            <span className="font-medium">Account Number:</span>{" "}
-                            {storeSettings.bankAccountNumber}
-                          </p>
-                        )}
+                      <div className="space-y-4">
+                        {storeSettings.bankAccounts
+                          .filter((acc) => acc.isActive)
+                          .map((account) => (
+                            <div
+                              key={account.id}
+                              className="p-3 bg-white/50 rounded border border-theme-border-light"
+                            >
+                              <p className="font-medium text-theme-text">
+                                {account.bankName}
+                              </p>
+                              <div className="text-sm text-theme-text-secondary mt-1 space-y-0.5">
+                                <p>
+                                  <span className="text-theme-text-muted">
+                                    Account Name:
+                                  </span>{" "}
+                                  {account.accountName}
+                                </p>
+                                <p>
+                                  <span className="text-theme-text-muted">
+                                    Account Number:
+                                  </span>{" "}
+                                  <span className="font-mono">
+                                    {account.accountNumber}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                          ))}
                       </div>
-                      <p className="mt-2 text-sm text-theme-text-secondary">
-                        Please transfer the amount and we&apos;ll confirm your
-                        order once payment is received.
+                      <p className="mt-4 text-sm text-theme-text-secondary">
+                        Please transfer the amount to any of the above accounts
+                        and we&apos;ll confirm your order once payment is
+                        received.
                       </p>
                     </div>
                   )}

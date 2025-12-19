@@ -7,8 +7,11 @@ export const CREATE_ORDER = gql`
         id
         customerName
         totalAmount
-        status
+        state
+        fulfillmentStatus
+        paymentStatus
       }
+      accessToken
       errors
     }
   }
@@ -99,10 +102,10 @@ export const DELETE_PRODUCT = gql`
   }
 `;
 
-export const UPDATE_ORDER_STATUS = gql`
-  mutation UpdateOrderStatus($id: ID!, $status: String!) {
-    updateOrderStatus(id: $id, status: $status) {
-      order {
+export const UPDATE_PAYMENT_STATUS = gql`
+  mutation UpdatePaymentStatus($orderId: ID!, $status: String!) {
+    updatePaymentStatus(orderId: $orderId, status: $status) {
+      payment {
         id
         status
       }
@@ -111,12 +114,62 @@ export const UPDATE_ORDER_STATUS = gql`
   }
 `;
 
-export const UPDATE_PAYMENT_STATUS = gql`
-  mutation UpdatePaymentStatus($orderId: ID!, $status: String!) {
-    updatePaymentStatus(orderId: $orderId, status: $status) {
-      payment {
+export const CANCEL_ORDER = gql`
+  mutation CancelOrder($id: ID!) {
+    cancelOrder(id: $id) {
+      order {
         id
-        status
+        state
+        fulfillmentStatus
+        paymentStatus
+        availableStateEvents
+        availableFulfillmentEvents
+        availablePaymentEvents
+      }
+      errors
+    }
+  }
+`;
+
+export const ARCHIVE_ORDER = gql`
+  mutation ArchiveOrder($id: ID!) {
+    archiveOrder(id: $id) {
+      order {
+        id
+        state
+        availableStateEvents
+      }
+      errors
+    }
+  }
+`;
+
+export const UNARCHIVE_ORDER = gql`
+  mutation UnarchiveOrder($id: ID!) {
+    archiveOrder(id: $id) {
+      order {
+        id
+        state
+        availableStateEvents
+      }
+      errors
+    }
+  }
+`;
+
+export const TRANSITION_FULFILLMENT_STATUS = gql`
+  mutation TransitionFulfillmentStatus($id: ID!, $event: String!) {
+    transitionFulfillmentStatus(id: $id, event: $event) {
+      order {
+        id
+        fulfillmentStatus
+        paymentStatus
+        payment {
+          id
+          status
+          paymentMethod
+        }
+        availableFulfillmentEvents
       }
       errors
     }
@@ -183,6 +236,45 @@ export const CREATE_DIRECT_UPLOAD = gql`
         signedBlobId
         uploadHeaders
       }
+      errors
+    }
+  }
+`;
+
+export const CREATE_BANK_ACCOUNT = gql`
+  mutation CreateBankAccount($bankName: String!, $accountName: String!, $accountNumber: String!, $isActive: Boolean) {
+    createBankAccount(bankName: $bankName, accountName: $accountName, accountNumber: $accountNumber, isActive: $isActive) {
+      bankAccount {
+        id
+        bankName
+        accountName
+        accountNumber
+        isActive
+      }
+      errors
+    }
+  }
+`;
+
+export const UPDATE_BANK_ACCOUNT = gql`
+  mutation UpdateBankAccount($id: ID!, $bankName: String, $accountName: String, $accountNumber: String, $isActive: Boolean) {
+    updateBankAccount(id: $id, bankName: $bankName, accountName: $accountName, accountNumber: $accountNumber, isActive: $isActive) {
+      bankAccount {
+        id
+        bankName
+        accountName
+        accountNumber
+        isActive
+      }
+      errors
+    }
+  }
+`;
+
+export const DELETE_BANK_ACCOUNT = gql`
+  mutation DeleteBankAccount($id: ID!) {
+    deleteBankAccount(id: $id) {
+      id
       errors
     }
   }

@@ -63,6 +63,13 @@ export const GET_STORE_SETTINGS = gql`
       bankName
       contactEmail
       contactPhone
+      bankAccounts {
+        id
+        bankName
+        accountName
+        accountNumber
+        isActive
+      }
     }
   }
 `;
@@ -77,7 +84,48 @@ export const GET_ORDER = gql`
       streetAddress
       city
       postalCode
-      status
+      state
+      fulfillmentStatus
+      paymentStatus
+      availableStateEvents
+      availableFulfillmentEvents
+      availablePaymentEvents
+      totalAmount
+      createdAt
+      orderItems {
+        id
+        quantity
+        price
+        subtotal
+        product {
+          id
+          name
+          images
+        }
+      }
+      payment {
+        id
+        paymentMethod
+        status
+        amount
+      }
+    }
+  }
+`;
+
+export const GET_ORDER_BY_TOKEN = gql`
+  query GetOrderByToken($token: String!) {
+    orderByToken(token: $token) {
+      id
+      customerName
+      customerEmail
+      customerPhone
+      streetAddress
+      city
+      postalCode
+      state
+      fulfillmentStatus
+      paymentStatus
       totalAmount
       createdAt
       orderItems {
@@ -111,7 +159,12 @@ export const GET_ORDERS = gql`
       streetAddress
       city
       postalCode
-      status
+      state
+      fulfillmentStatus
+      paymentStatus
+      availableStateEvents
+      availableFulfillmentEvents
+      availablePaymentEvents
       totalAmount
       createdAt
       orderItems {

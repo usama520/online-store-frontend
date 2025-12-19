@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
   const currencySymbol = storeSettings?.currencySymbol || "Rs.";
 
-  const pendingOrders = orders.filter((o) => o.status === "pending").length;
+  const pendingOrders = orders.filter((o) => o.fulfillmentStatus === "unfulfilled").length;
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
   const lowStockProducts = products.filter((p) => p.stockQuantity < 10).length;
 
@@ -155,22 +155,22 @@ export default function AdminDashboard() {
                     <td className="py-2 sm:py-3 px-2 sm:px-4">
                       <span
                         className={`badge ${
-                          order.status === "pending"
+                          order.fulfillmentStatus === "unfulfilled"
                             ? "badge-yellow"
-                            : order.status === "confirmed"
-                            ? "badge-blue"
-                            : order.status === "processing"
+                            : order.fulfillmentStatus === "processing"
                             ? "badge-purple"
-                            : order.status === "shipped"
+                            : order.fulfillmentStatus === "shipped"
                             ? "badge-indigo"
-                            : order.status === "delivered"
+                            : order.fulfillmentStatus === "delivered"
                             ? "badge-green"
-                            : order.status === "cancelled"
+                            : order.fulfillmentStatus === "returned"
+                            ? "badge-red"
+                            : order.state === "cancelled"
                             ? "badge-red"
                             : "badge-gray"
                         }`}
                       >
-                        {order.status}
+                        {order.state === "cancelled" ? "cancelled" : order.fulfillmentStatus.replace("_", " ")}
                       </span>
                     </td>
                     <td className="hidden sm:table-cell py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-primary capitalize">

@@ -41,11 +41,24 @@ export interface Order {
   streetAddress: string;
   city: string;
   postalCode?: string;
-  status: string;
+  state: 'open' | 'archived' | 'cancelled';
+  fulfillmentStatus: 'unfulfilled' | 'processing' | 'shipped' | 'delivered' | 'returned' | 'rejected';
+  paymentStatus: 'pending' | 'authorized' | 'paid' | 'partially_paid' | 'refunded' | 'voided';
+  availableStateEvents: string[];
+  availableFulfillmentEvents: string[];
+  availablePaymentEvents: string[];
   totalAmount: number;
   createdAt: string;
   orderItems: OrderItem[];
   payment?: Payment;
+}
+
+export interface BankAccount {
+  id: string;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  isActive: boolean;
 }
 
 export interface StoreSettings {
@@ -59,6 +72,7 @@ export interface StoreSettings {
   bankName?: string;
   contactEmail?: string;
   contactPhone?: string;
+  bankAccounts: BankAccount[];
 }
 
 export interface User {

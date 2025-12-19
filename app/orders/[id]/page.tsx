@@ -1,8 +1,12 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
-import { GET_ORDER, GET_STORE_SETTINGS } from "@/lib/graphql/queries";
+import {
+  GET_ORDER,
+  GET_STORE_SETTINGS,
+  GET_ORDER_BY_TOKEN,
+} from "@/lib/graphql/queries";
 import { formatPrice } from "@/lib/utils";
 import Navbar from "@/components/ui/Navbar";
 import { Order, StoreSettings } from "@/lib/types";
@@ -11,17 +15,19 @@ import Link from "next/link";
 export default function OrderSuccessPage() {
   const params = useParams();
   const id = params.id as string;
+  const searchParams = useSearchParams();
+  const token = searchParams?.get("token");
 
-  const { data, loading } = useQuery(GET_ORDER, {
-    variables: { id },
-    skip: !id,
+  const { data, loading } = useQuery(token ? GET_ORDER_BY_TOKEN : GET_ORDER, {
+    variables: token ? { token } : { id },
+    skip: !(token || id),
   });
 
   const { data: settingsData } = useQuery(GET_STORE_SETTINGS);
   const storeSettings = settingsData?.storeSettings as StoreSettings | null;
   const currencySymbol = storeSettings?.currencySymbol || "Rs.";
 
-  const order = data?.order as Order | null;
+  const order = (data?.order || data?.orderByToken) as Order | null;
 
   if (loading) {
     return (
@@ -99,7 +105,7 @@ export default function OrderSuccessPage() {
             <div>
               <p className="text-sm text-theme-text-secondary">Status</p>
               <p className="font-semibold text-theme-primary capitalize">
-                {order.status}
+                {order.state === "cancelled" ? "cancelled" : order.fulfillmentStatus.replace("_", " ")}
               </p>
             </div>
             <div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_STORE_SETTINGS } from "@/lib/graphql/queries";
 import { defaultTheme, ThemeId, themeIds } from "@/lib/themes";
@@ -32,7 +32,7 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const { data, loading } = useQuery(GET_STORE_SETTINGS);
-  const [hasAppliedInitial, setHasAppliedInitial] = useState(false);
+  // apply initial theme once on mount
   const setSettings = useStoreSettingsStore((state) => state.setSettings);
 
   // Get theme from API response
@@ -60,13 +60,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // On mount: Apply cached theme from localStorage, or default theme
   useEffect(() => {
-    if (!hasAppliedInitial) {
-      const cachedTheme = getCachedTheme();
-      const initialTheme = cachedTheme || defaultTheme;
-      document.documentElement.setAttribute("data-theme", initialTheme);
-      setHasAppliedInitial(true);
-    }
-  }, [hasAppliedInitial]);
+    const cachedTheme = getCachedTheme();
+    const initialTheme = cachedTheme || defaultTheme;
+    document.documentElement.setAttribute("data-theme", initialTheme);
+  }, []);
 
   // When API returns theme: apply it and save to localStorage
   useEffect(() => {

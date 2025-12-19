@@ -3,7 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, ApolloError } from "@apollo/client";
 import { GET_STORE_SETTINGS } from "@/lib/graphql/queries";
-import { UPDATE_STORE_SETTINGS } from "@/lib/graphql/mutations";
+
+import {
+  UPDATE_STORE_SETTINGS,
+  CREATE_BANK_ACCOUNT,
+  UPDATE_BANK_ACCOUNT,
+  DELETE_BANK_ACCOUNT,
+} from "@/lib/graphql/mutations";
 import { StoreSettings } from "@/lib/types";
 import { useToast } from "@/lib/hooks/useToast";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -16,6 +22,10 @@ import {
   Check,
   ShoppingCart,
   Eye,
+  Trash2,
+  Plus,
+  Edit2,
+  X,
 } from "lucide-react";
 import { themes, themeIds, ThemeId, defaultTheme } from "@/lib/themes";
 
@@ -24,6 +34,9 @@ export default function AdminSettingsPage() {
   const [updateSettings, { loading: saving }] = useMutation(
     UPDATE_STORE_SETTINGS
   );
+  const [createBankAccount] = useMutation(CREATE_BANK_ACCOUNT);
+  const [updateBankAccount] = useMutation(UPDATE_BANK_ACCOUNT);
+  const [deleteBankAccount] = useMutation(DELETE_BANK_ACCOUNT);
   const { showError, showSuccess } = useToast();
 
   const storeSettings = data?.storeSettings as StoreSettings | null;
@@ -32,11 +45,17 @@ export default function AdminSettingsPage() {
     storeName: "",
     selectedTheme: defaultTheme as ThemeId,
     currencySymbol: "Rs.",
-    bankAccountName: "",
-    bankAccountNumber: "",
-    bankName: "",
     contactEmail: "",
     contactPhone: "",
+  });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<any>(null);
+  const [bankForm, setBankForm] = useState({
+    bankName: "",
+    accountName: "",
+    accountNumber: "",
+    isActive: true,
   });
 
   // Track if we've synced to prevent re-syncing
@@ -55,14 +74,74 @@ export default function AdminSettingsPage() {
         storeName: storeSettings.storeName || "",
         selectedTheme: theme,
         currencySymbol: storeSettings.currencySymbol || "Rs.",
-        bankAccountName: storeSettings.bankAccountName || "",
-        bankAccountNumber: storeSettings.bankAccountNumber || "",
-        bankName: storeSettings.bankName || "",
         contactEmail: storeSettings.contactEmail || "",
         contactPhone: storeSettings.contactPhone || "",
       });
     }
   }, [storeSettings]);
+
+  const handleOpenModal = (account: any = null) => {
+    if (account) {
+      setEditingAccount(account);
+      setBankForm({
+        bankName: account.bankName,
+        accountName: account.accountName,
+        accountNumber: account.accountNumber,
+        isActive: account.isActive,
+      });
+    } else {
+      setEditingAccount(null);
+      setBankForm({
+        bankName: "",
+        accountName: "",
+        accountNumber: "",
+        isActive: true,
+      });
+    }
+    setIsModalOpen(true);
+  };
+
+  const activeBankAccounts = storeSettings?.bankAccounts || [];
+
+  const handleBankSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingAccount) {
+        await updateBankAccount({
+          variables: {
+            id: editingAccount.id,
+            ...bankForm,
+          },
+        });
+        showSuccess("Bank account updated");
+      } else {
+        await createBankAccount({
+          variables: bankForm,
+        });
+        showSuccess("Bank account added");
+      }
+      refetch();
+      setIsModalOpen(false);
+    } catch (error) {
+       if (error instanceof ApolloError) {
+        console.error("[GraphQL Error]:", error);
+        showError("Something went wrong");
+      } else {
+        showError("Failed to save bank account");
+      }
+    }
+  };
+
+  const handleDeleteBankArgs = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this account?")) return;
+    try {
+      await deleteBankAccount({ variables: { id } });
+      refetch();
+      showSuccess("Bank account deleted");
+    } catch (error) {
+      showError("Failed to delete bank account");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -439,55 +518,143 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                Bank Name
-              </label>
-              <input
-                type="text"
-                value={formData.bankName}
-                onChange={(e) =>
-                  setFormData({ ...formData, bankName: e.target.value })
-                }
-                placeholder="e.g., National Bank"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
-              />
+            <div className="flex justify-between items-center">
+               <span className="text-sm text-text-muted">Manage your bank accounts</span>
+               <button
+                 type="button"
+                 onClick={() => handleOpenModal()}
+                 className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+               >
+                 <Plus className="w-4 h-4" />
+                 Add Account
+               </button>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                Account Name
-              </label>
-              <input
-                type="text"
-                value={formData.bankAccountName}
-                onChange={(e) =>
-                  setFormData({ ...formData, bankAccountName: e.target.value })
-                }
-                placeholder="e.g., My Online Store LLC"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                Account Number
-              </label>
-              <input
-                type="text"
-                value={formData.bankAccountNumber}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    bankAccountNumber: e.target.value,
-                  })
-                }
-                placeholder="e.g., 1234567890"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-white"
-              />
-            </div>
+            {activeBankAccounts.length === 0 ? (
+              <p className="text-sm text-center py-8 text-text-muted border-2 border-dashed border-gray-200 rounded-lg">
+                No bank accounts added yet.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {activeBankAccounts.map((account) => (
+                  <div
+                    key={account.id}
+                    className="p-4 border border-gray-200 rounded-lg bg-gray-50 flex justify-between items-center group"
+                  >
+                    <div>
+                      <h4 className="font-medium text-text-primary">{account.bankName}</h4>
+                      <p className="text-sm text-text-secondary">{account.accountName}</p>
+                      <p className="text-xs text-text-muted font-mono mt-1">{account.accountNumber}</p>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenModal(account)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-white rounded-lg transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteBankArgs(account.id)}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-white rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Bank Account Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 className="text-lg font-bold text-gray-900">
+                  {editingAccount ? "Edit Bank Account" : "Add Bank Account"}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bank Name
+                  </label>
+                  <input
+                    type="text"
+                    value={bankForm.bankName}
+                    onChange={(e) => setBankForm({ ...bankForm, bankName: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    placeholder="e.g. Chase Bank"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                     Account Name
+                  </label>
+                  <input
+                    type="text"
+                    value={bankForm.accountName}
+                    onChange={(e) => setBankForm({ ...bankForm, accountName: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    placeholder="e.g. My Company LLC"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Account Number
+                  </label>
+                  <input
+                    type="text"
+                    value={bankForm.accountNumber}
+                    onChange={(e) => setBankForm({ ...bankForm, accountNumber: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    placeholder="e.g. 1234567890"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                   <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={bankForm.isActive}
+                    onChange={(e) => setBankForm({ ...bankForm, isActive: e.target.checked })}
+                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                   />
+                   <label htmlFor="isActive" className="text-sm text-gray-700">Active</label>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBankSubmit}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                >
+                  {editingAccount ? "Update Account" : "Add Account"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         <button
           type="submit"
